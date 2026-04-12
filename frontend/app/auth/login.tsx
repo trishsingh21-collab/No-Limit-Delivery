@@ -34,7 +34,8 @@ export default function LoginScreen() {
     try {
       const data = await api.login(email.trim(), password);
       await login(data.user, data.session_token);
-      // Navigation is handled by useProtectedRoute in _layout.tsx
+      // Explicit navigation + useProtectedRoute as backup
+      router.replace('/(tabs)/home' as any);
     } catch (error: any) {
       Alert.alert('Login Failed', error.message || 'Invalid credentials');
       setLoading(false);

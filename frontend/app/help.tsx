@@ -7,9 +7,9 @@ import { Colors, Typography, Spacing, BorderRadius } from '../constants/Colors';
 
 const FAQ_ITEMS = [
   { q: 'How do I track my order?', a: 'After placing an order, go to the Orders tab and tap on your active order. You\'ll see real-time tracking with estimated delivery time.' },
-  { q: 'How do I earn loyalty points?', a: 'You earn 1 point for every $1 spent. Additional points from reviews (10 pts), referrals (50 pts), and birthday bonuses (100 pts).' },
+  { q: 'How do I earn loyalty points?', a: 'You earn 1 point for every R1 spent. Additional points from reviews (10 pts), referrals (50 pts), and birthday bonuses (100 pts).' },
   { q: 'Can I cancel my order?', a: 'You can cancel within 2 minutes of placing. After the restaurant starts preparing, cancellation may not be possible.' },
-  { q: 'How do delivery fees work?', a: 'Standard delivery fee is $2.99-$3.99 depending on distance. Free delivery is available as a loyalty reward.' },
+  { q: 'How do delivery fees work?', a: 'Standard delivery fee is R25 depending on distance. Free delivery is available as a loyalty reward.' },
   { q: 'Is my payment information secure?', a: 'Yes! We use Stripe for all payments. Your card details are never stored on our servers.' },
   { q: 'How do promo codes work?', a: 'Enter your promo code at checkout. Discounts are applied to your subtotal before tax and delivery fees.' },
 ];

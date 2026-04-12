@@ -327,7 +327,7 @@ export default function RestaurantDetailScreen() {
               <Text style={styles.cartCountText}>{itemCount}</Text>
             </View>
             <Text style={styles.floatingCartText}>View Cart</Text>
-            <Text style={styles.floatingCartPrice}>${getTotal().toFixed(2)}</Text>
+            <Text style={styles.floatingCartPrice}>R{getTotal().toFixed(2)}</Text>
           </View>
         </TouchableOpacity>
         </BounceInView>

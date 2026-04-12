@@ -27,7 +27,7 @@ const REWARDS = [
   { id: 'r2', name: '10% Off', description: '10% discount on any order', points: 100, icon: 'pricetag' },
   { id: 'r3', name: '20% Off', description: '20% discount on any order', points: 200, icon: 'pricetags' },
   { id: 'r4', name: 'Free Dessert', description: 'Free dessert with any order', points: 75, icon: 'ice-cream' },
-  { id: 'r5', name: '$5 Credit', description: '$5 off your next order', points: 150, icon: 'cash' },
+  { id: 'r5', name: 'R50 Credit', description: 'R50 off your next order', points: 150, icon: 'cash' },
   { id: 'r6', name: 'VIP Access', description: 'Early access to new restaurants', points: 300, icon: 'star' },
 ];
 
@@ -222,7 +222,7 @@ export default function RewardsScreen() {
           <Text style={styles.sectionTitle}>How to Earn Points</Text>
           <View style={styles.earnList}>
             {[
-              { icon: 'cart', text: 'Earn 1 point for every $1 spent', highlight: '1 pt / $1' },
+              { icon: 'cart', text: 'Earn 1 point for every R1 spent', highlight: '1 pt / R1' },
               { icon: 'star', text: 'Leave a review and earn 10 points', highlight: '+10 pts' },
               { icon: 'people', text: 'Refer a friend and earn 50 points', highlight: '+50 pts' },
               { icon: 'gift', text: 'Birthday bonus - 100 points', highlight: '+100 pts' },

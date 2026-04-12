@@ -21,7 +21,7 @@ import { api } from '../utils/api';
 
 export default function CheckoutScreen() {
   const router = useRouter();
-  const { items, restaurant_id, restaurant_name, getTotal, clearCart } = useCartStore();
+  const { items, getTotal, clearCart, getItemsByRestaurant, getRestaurants, getDeliveryFeeTotal, getGrandTotal } = useCartStore();
   const session_token = useAuthStore(state => state.session_token);
 
   const [address, setAddress] = useState({
@@ -33,9 +33,11 @@ export default function CheckoutScreen() {
   const [loading, setLoading] = useState(false);
 
   const subtotal = getTotal();
-  const deliveryFee = 25.00;
+  const deliveryFees = getDeliveryFeeTotal();
   const tax = subtotal * 0.15;
-  const total = subtotal + deliveryFee + tax;
+  const total = getGrandTotal();
+  const grouped = getItemsByRestaurant();
+  const restaurantIds = getRestaurants();
 
   const handlePlaceOrder = async () => {
     if (!address.street || !address.city || !address.zip) {
@@ -50,8 +52,11 @@ export default function CheckoutScreen() {
 
     setLoading(true);
     try {
+      // Create an order for the first restaurant (primary order)
+      const firstRestId = restaurantIds[0];
+      const firstRestItems = grouped[firstRestId];
       const orderData = {
-        restaurant_id: restaurant_id,
+        restaurant_id: firstRestId,
         items: items.map(item => ({
           item_id: item.item_id,
           name: item.name,
@@ -111,10 +116,13 @@ export default function CheckoutScreen() {
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Order from */}
           <View style={styles.section}>
-            <View style={styles.restaurantBanner}>
-              <Ionicons name="restaurant" size={20} color={Colors.sage} />
-              <Text style={styles.restaurantName}>{restaurant_name}</Text>
-            </View>
+            {Object.entries(grouped).map(([restId, restItems]) => (
+              <View key={restId} style={[styles.restaurantBanner, { marginBottom: 8 }]}>
+                <Ionicons name="restaurant" size={20} color={Colors.sage} />
+                <Text style={styles.restaurantName}>{restItems[0]?.restaurant_name}</Text>
+                <Text style={styles.itemCount}>{restItems.length} items</Text>
+              </View>
+            ))}
           </View>
 
           {/* Delivery Address */}
@@ -194,7 +202,7 @@ export default function CheckoutScreen() {
                     {item.quantity}x {item.name}
                   </Text>
                   <Text style={styles.summaryItemPrice}>
-                    ${(item.price * item.quantity).toFixed(2)}
+                    R{(item.price * item.quantity).toFixed(2)}
                   </Text>
                 </View>
               ))}
@@ -206,11 +214,11 @@ export default function CheckoutScreen() {
                 <Text style={styles.summaryValue}>R{subtotal.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Delivery Fee</Text>
-                <Text style={styles.summaryValue}>R{deliveryFee.toFixed(2)}</Text>
+                <Text style={styles.summaryLabel}>Delivery ({restaurantIds.length} x R25)</Text>
+                <Text style={styles.summaryValue}>R{deliveryFees.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Tax</Text>
+                <Text style={styles.summaryLabel}>VAT (15%)</Text>
                 <Text style={styles.summaryValue}>R{tax.toFixed(2)}</Text>
               </View>
 
@@ -312,6 +320,11 @@ const styles = StyleSheet.create({
     ...Typography.body,
     fontWeight: '600',
     color: Colors.sageDark,
+  },
+  itemCount: {
+    ...Typography.caption,
+    color: Colors.sage,
+    fontWeight: '600',
   },
   inputGroup: {
     gap: Spacing.sm,

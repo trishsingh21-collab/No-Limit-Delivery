@@ -141,7 +141,7 @@ export default function OrdersScreen() {
                   <Text style={styles.orderDate}>
                     {format(new Date(order.created_at), 'MMM d, yyyy • h:mm a')}
                   </Text>
-                  <Text style={styles.orderTotal}>${order.total.toFixed(2)}</Text>
+                  <Text style={styles.orderTotal}>R{order.total.toFixed(2)}</Text>
                 </View>
               </TouchableOpacity>
             ))}
