@@ -1,0 +1,104 @@
+{
+  "theme": "dark",
+  "archetype": "5 (Jewel & Luxury)",
+  "design_philosophy": "High-end concierge service. Less Uber Eats, more private member's club. Emphasize negative space, cinematic dark mode, and elegant typography.",
+  "colors": {
+    "background": "#0A0A0A",
+    "surface": "#141414",
+    "surface_glass": "rgba(10, 10, 10, 0.7)",
+    "primary": "#A3B18A",
+    "primary_glow": "rgba(163, 177, 138, 0.4)",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A0A0A0",
+    "border": "rgba(255, 255, 255, 0.08)",
+    "accent_hover": "#8C9C72"
+  },
+  "typography": {
+    "font_family_heading": "Playfair Display, serif",
+    "font_family_body": "Manrope, sans-serif",
+    "h1": "text-4xl tracking-tighter font-medium",
+    "h2": "text-3xl tracking-tight font-medium",
+    "h3": "text-xl font-medium",
+    "body": "text-base font-light leading-relaxed",
+    "overline": "text-xs tracking-[0.2em] uppercase font-medium text-[#A3B18A]"
+  },
+  "spacing": {
+    "section_padding": "py-12 px-6",
+    "container_gap": "gap-8",
+    "element_gap": "gap-4"
+  },
+  "components": {
+    "tab_bar": {
+      "style": "glassmorphism",
+      "classes": "fixed bottom-0 left-0 right-0 z-50 backdrop-blur-2xl bg-black/60 border-t border-white/10 pb-6 pt-4 px-6 flex justify-between items-center"
+    },
+    "service_card": {
+      "style": "full-bleed image with gradient overlay",
+      "classes": "relative overflow-hidden rounded-2xl group border border-white/5 bg-[#141414]",
+      "overlay": "absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+    },
+    "promo_banner": {
+      "style": "cinematic and moody",
+      "classes": "relative rounded-3xl overflow-hidden bg-[#111111] border border-[#A3B18A]/30 min-h-[160px] flex items-center p-6"
+    },
+    "ai_button": {
+      "style": "neumorphic/tracing beam",
+      "classes": "rounded-full bg-gradient-to-r from-[#A3B18A]/20 to-transparent border border-[#A3B18A]/50 backdrop-blur-md px-6 py-3 text-[#A3B18A] flex items-center gap-2"
+    },
+    "search_bar": {
+      "style": "elegant dark input",
+      "classes": "w-full bg-[#1A1A1A] border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-[#A3B18A] transition-colors"
+    }
+  },
+  "layout_strategies": {
+    "home_screen": "Top: Elegant Search Bar + Filter. Next: Wide cinematic Promo Banner. Next: Horizontal scroll for Service Categories (Tall cards, not square blocks). Next: 'Curated For You' Vertical list of Restaurant/Service Cards.",
+    "restaurant_detail": "Hero: Massive full-width image (40vh) fading into black. Content: Overlapping the hero slightly with a glassmorphism header holding the restaurant title and rating. Menu: Distinct typography, minimal borders, elegant price tags.",
+    "general": "Never use pure white blocks or default shadcn cards. The entire app should feel like a nighttime drive in a luxury car. Use `pb-32` on main containers to account for the floating tab bar."
+  },
+  "motion": {
+    "hover_effects": "Subtle scale (scale-105) on images, opacity fade on text.",
+    "page_transitions": "Smooth fade-in. Use Framer Motion for a staggered entrance of list items."
+  },
+  "image_urls": {
+    "hero_promo": {
+      "url": "https://images.unsplash.com/photo-1609074458316-3e282975bb1e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBnaWZ0JTIwYm94JTIwZGFya3xlbnwwfHx8fDE3NzYwMjk3NDh8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Luxury gift / promo banner background"
+    },
+    "food_category": {
+      "url": "https://images.unsplash.com/photo-1599731316496-a3018cde6bda?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwyfHxnb3VybWV0JTIwZmluZSUyMGRpbmluZyUyMHBsYXRlfGVufDB8fHx8MTc3NjAyOTczMnww&ixlib=rb-4.1.0&q=85",
+      "description": "Gourmet food category image"
+    },
+    "restaurant_hero": {
+      "url": "https://images.unsplash.com/photo-1643757343278-5d50309dfa44?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxnb3VybWV0JTIwZmluZSUyMGRpbmluZyUyMHBsYXRlfGVufDB8fHx8MTc3NjAyOTczMnww&ixlib=rb-4.1.0&q=85",
+      "description": "Restaurant details main image"
+    },
+    "flowers_category": {
+      "url": "https://images.unsplash.com/photo-1759774312867-c230ea3c1ea6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBlbGVnYW50JTIwZmxvcmFsJTIwYXJyYW5nZW1lbnR8ZW58MHx8fHwxNzc2MDI5NzMyfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Luxury floral arrangement category"
+    },
+    "laundry_category": {
+      "url": "https://images.unsplash.com/photo-1667284152861-36e03571486a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwc3VpdCUyMGNsb3NldHxlbnwwfHx8fDE3NzYwMjk3NDh8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Premium suit / laundry category"
+    },
+    "parcel_category": {
+      "url": "https://images.unsplash.com/photo-1636446704248-87d51e963e60?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBibGFjayUyMGNhciUyMG5pZ2h0fGVufDB8fHx8MTc3NjAyOTc0OHww&ixlib=rb-4.1.0&q=85",
+      "description": "Luxury black car at night for parcel delivery"
+    },
+    "ai_feature_bg": {
+      "url": "https://images.unsplash.com/photo-1692533801336-fb86a60f501f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRhcmslMjBncmVlbiUyMGdsb3d8ZW58MHx8fHwxNzc2MDI5NzQ4fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Abstract dark green glow for AI mood feature button or banner"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Load 'Playfair Display' and 'Manrope' from Google Fonts in index.css.",
+    "Build a mobile-first web app mimicking a premium iOS application layout.",
+    "Use Lucide icons but keep them thin (stroke-width 1.5) to match luxury feel.",
+    "Ensure the bottom navigation is fixed, glassmorphic (backdrop-blur-xl bg-black/70), and elegant. Hide scrollbars to keep it clean.",
+    "Use Playfair Display for all main headings (H1, H2, Cards Titles) and Manrope for body text.",
+    "Never use typical massive shadow boxes. Rely on 1px subtle white/10 borders and high contrast backgrounds.",
+    "All cards must have absolute positioning gradient overlays to ensure text over images is 100% readable.",
+    "Inject framer-motion staggered animations on the Home screen to make the loading feel like a bespoke experience.",
+    "Avoid standard Shadcn 'Card' wrapper styles. Build custom raw HTML/Tailwind divs to ensure edge-to-edge cinematic imagery."
+  ],
+  "testing_attributes_requirement": "All interactive and key informational elements MUST include a data-testid attribute (e.g., data-testid='service-food-tab')."
+}
