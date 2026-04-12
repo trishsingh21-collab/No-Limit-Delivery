@@ -34,10 +34,12 @@ export default function LoginScreen() {
     try {
       const data = await api.login(email.trim(), password);
       await login(data.user, data.session_token);
-      router.replace('/(tabs)/home');
+      // Use setTimeout to ensure state is updated before navigation
+      setTimeout(() => {
+        router.replace('/(tabs)/home' as any);
+      }, 100);
     } catch (error: any) {
       Alert.alert('Login Failed', error.message || 'Invalid credentials');
-    } finally {
       setLoading(false);
     }
   };

@@ -41,10 +41,11 @@ export default function SignupScreen() {
     try {
       const data = await api.signup(email.trim(), password, name.trim(), phone.trim() || undefined);
       await login(data.user, data.session_token);
-      router.replace('/(tabs)/home');
+      setTimeout(() => {
+        router.replace('/(tabs)/home' as any);
+      }, 100);
     } catch (error: any) {
       Alert.alert('Signup Failed', error.message || 'Could not create account');
-    } finally {
       setLoading(false);
     }
   };
