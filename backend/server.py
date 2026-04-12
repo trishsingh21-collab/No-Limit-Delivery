@@ -464,8 +464,9 @@ async def create_order(
     
     # Calculate totals
     subtotal = sum(item.price * item.quantity for item in data.items)
+    delivery_fee = 25.00  # R25 delivery fee per restaurant
     tax = subtotal * 0.15  # 15% VAT (South Africa)
-    total = subtotal + 25.00 + tax  # subtotal + delivery_fee + tax
+    total = subtotal + delivery_fee + tax
     
     # Create order
     order = Order(
@@ -474,6 +475,7 @@ async def create_order(
         restaurant_name=restaurant["name"],
         items=[item.model_dump() for item in data.items],
         subtotal=round(subtotal, 2),
+        delivery_fee=round(delivery_fee, 2),
         tax=round(tax, 2),
         total=round(total, 2),
         delivery_address=data.delivery_address,
