@@ -254,7 +254,7 @@ export default function HomeScreen() {
         {/* All Restaurants - stagger */}
         <View style={styles.section}>
           <Animated.View entering={FadeIn.delay(600).duration(300)}>
-            <Text style={styles.sectionTitle}>All Restaurants</Text>
+            <Text style={styles.sectionTitle}>All Providers</Text>
           </Animated.View>
           {allRestaurants
             .filter(r => activeService === 'all' || r.service_type === activeService)
@@ -322,11 +322,11 @@ const styles = StyleSheet.create({
   promoEmoji1: { fontSize: 40, opacity: 0.8 },
   promoEmoji2: { fontSize: 56, opacity: 0.8 },
   aiSection: { flexDirection: 'row', paddingHorizontal: Spacing.xl, gap: Spacing.md, marginBottom: Spacing.lg },
-  aiCard: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.sagePale, paddingVertical: Spacing.md, borderRadius: BorderRadius.lg, gap: Spacing.sm },
-  aiCardText: { ...Typography.bodySmall, color: Colors.sageDark, fontWeight: '600' },
+  aiCard: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.sagePale, paddingVertical: 16, paddingHorizontal: Spacing.md, borderRadius: BorderRadius.xl, gap: Spacing.sm, minHeight: 52 },
+  aiCardText: { ...Typography.bodySmall, color: Colors.sageDark, fontWeight: '600', lineHeight: 18 },
   section: { marginBottom: Spacing.lg },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.xl, marginBottom: Spacing.md },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
+  sectionTitle: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary, paddingHorizontal: Spacing.xl },
   seeAll: { ...Typography.bodySmall, color: Colors.sage, fontWeight: '600' },
   categoriesScroll: { paddingLeft: Spacing.xl },
   categoryCard: { alignItems: 'center', marginRight: Spacing.md, width: 76 },
@@ -341,16 +341,16 @@ const styles = StyleSheet.create({
   featuredInfo: { padding: Spacing.md },
   featuredNameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xs },
   restaurantName: { fontSize: 18, fontWeight: '700', color: Colors.textPrimary, flex: 1 },
-  ratingBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: BorderRadius.md, gap: 4 },
+  ratingBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.surfaceAlt, paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: BorderRadius.md, gap: 4 },
   ratingText: { ...Typography.bodySmall, fontWeight: '700', color: Colors.sage },
   cuisine: { ...Typography.bodySmall, color: Colors.textSecondary, marginBottom: Spacing.sm },
   metaRow: { flexDirection: 'row', alignItems: 'center' },
   metaText: { ...Typography.caption, color: Colors.textSecondary, marginLeft: 4 },
-  listCard: { flexDirection: 'row', marginHorizontal: Spacing.xl, marginBottom: Spacing.md, backgroundColor: Colors.white, borderRadius: BorderRadius.lg, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border },
-  listImage: { width: 100, height: 100, backgroundColor: Colors.white },
+  listCard: { flexDirection: 'row', marginHorizontal: Spacing.xl, marginBottom: Spacing.md, backgroundColor: Colors.white, borderRadius: BorderRadius.xl, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border, alignItems: 'stretch' },
+  listImage: { width: 110, height: 110, backgroundColor: Colors.surfaceAlt },
   listInfo: { flex: 1, padding: Spacing.md, justifyContent: 'center' },
-  listName: { ...Typography.body, fontWeight: '600', color: Colors.textPrimary, marginBottom: 2 },
-  listCuisine: { ...Typography.caption, color: Colors.textSecondary, marginBottom: Spacing.xs },
+  listName: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, marginBottom: 4 },
+  listCuisine: { ...Typography.caption, color: Colors.textSecondary, marginBottom: Spacing.sm },
   metaTextSmall: { ...Typography.caption, color: Colors.textSecondary, marginLeft: 4 },
   metaDot: { ...Typography.caption, color: Colors.lightGray, marginHorizontal: 4 },
 });
