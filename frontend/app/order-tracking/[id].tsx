@@ -15,6 +15,8 @@ import { api } from '../../utils/api';
 import { useAuthStore } from '../../store/authStore';
 import Constants from 'expo-constants';
 import { io, Socket } from 'socket.io-client';
+import { StaggerItem, FadeInView, Pulse, BounceInView } from '../../components/animated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
@@ -139,7 +141,7 @@ export default function OrderTrackingScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Status Card */}
-        <View style={styles.statusCard}>
+        <Animated.View entering={FadeInDown.delay(100).duration(400).springify()} style={styles.statusCard}>
           <View style={styles.statusHeader}>
             <Text style={styles.statusTitle}>
               {order.status === 'delivered' ? 'Order Delivered!' :
@@ -155,7 +157,7 @@ export default function OrderTrackingScreen() {
           </View>
 
           <Text style={styles.orderId}>Order #{order.order_id.slice(-8).toUpperCase()}</Text>
-        </View>
+        </Animated.View>
 
         {/* Progress Tracker */}
         <View style={styles.progressSection}>
@@ -167,8 +169,11 @@ export default function OrderTrackingScreen() {
               const isLast = index === ORDER_STATUSES.length - 1;
 
               return (
-                <View key={status.key} style={styles.timelineItem}>
+                <StaggerItem key={status.key} index={index} delay={100}>
+                <View style={styles.timelineItem}>
                   <View style={styles.timelineLeft}>
+                    {isCurrent ? (
+                    <Pulse active={true}>
                     <View
                       style={[
                         styles.timelineDot,
@@ -182,6 +187,21 @@ export default function OrderTrackingScreen() {
                         color={isCompleted ? Colors.white : Colors.lightGray}
                       />
                     </View>
+                    </Pulse>
+                    ) : (
+                    <View
+                      style={[
+                        styles.timelineDot,
+                        isCompleted && styles.timelineDotCompleted,
+                      ]}
+                    >
+                      <Ionicons
+                        name={isCompleted ? 'checkmark' : (status.icon as any)}
+                        size={14}
+                        color={isCompleted ? Colors.white : Colors.lightGray}
+                      />
+                    </View>
+                    )}
                     {!isLast && (
                       <View
                         style={[
@@ -206,6 +226,7 @@ export default function OrderTrackingScreen() {
                     )}
                   </View>
                 </View>
+                </StaggerItem>
               );
             })}
           </View>

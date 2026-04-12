@@ -10,9 +10,11 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeInUp, SlideInRight } from 'react-native-reanimated';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/Colors';
+import { StaggerItem, BounceInView, SlideInView } from '../../components/animated';
 import { api } from '../../utils/api';
 import { useCartStore } from '../../store/cartStore';
 
@@ -139,7 +141,7 @@ export default function RestaurantDetailScreen() {
         </View>
 
         {/* Restaurant Info Card (overlapping hero) */}
-        <View style={styles.infoCard}>
+        <Animated.View entering={FadeInUp.delay(200).duration(500).springify()} style={styles.infoCard}>
           <Text testID="restaurant-name" style={styles.restaurantName}>{restaurant.name}</Text>
           <Text style={styles.restaurantDescription}>{restaurant.description}</Text>
 
@@ -171,7 +173,7 @@ export default function RestaurantDetailScreen() {
               Mon-Fri: {availableHours.weekdays} | Sat-Sun: {availableHours.weekends}
             </Text>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Menu / Reviews Tabs */}
         <View style={styles.tabRow}>
@@ -230,8 +232,9 @@ export default function RestaurantDetailScreen() {
             {Object.entries(groupedItems).map(([category, items]) => (
               <View key={category} style={styles.menuCategory}>
                 <Text style={styles.menuCategoryTitle}>{category.toUpperCase()}</Text>
-                {items.map((item) => (
-                  <View key={item.item_id} style={styles.menuItem}>
+                {items.map((item, idx) => (
+                  <StaggerItem key={item.item_id} index={idx} delay={60}>
+                    <View style={styles.menuItem}>
                     <View style={styles.menuItemInfo}>
                       <Text testID={`menu-item-${item.item_id}`} style={styles.menuItemName}>
                         {item.name}
@@ -262,7 +265,7 @@ export default function RestaurantDetailScreen() {
                         <Ionicons name="add" size={20} color={Colors.white} />
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </StaggerItem>
                 ))}
               </View>
             ))}
@@ -317,7 +320,8 @@ export default function RestaurantDetailScreen() {
 
       {/* Floating Cart Button */}
       {itemCount > 0 && (
-        <TouchableOpacity
+        <BounceInView delay={200}>
+          <TouchableOpacity
           testID="view-cart-button"
           style={styles.floatingCart}
           onPress={() => router.push('/cart')}
@@ -330,6 +334,7 @@ export default function RestaurantDetailScreen() {
             <Text style={styles.floatingCartPrice}>${getTotal().toFixed(2)}</Text>
           </View>
         </TouchableOpacity>
+        </BounceInView>
       )}
     </View>
   );
