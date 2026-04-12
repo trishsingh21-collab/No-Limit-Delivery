@@ -42,14 +42,14 @@ export default function CartScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name=\"arrow-back\" size={24} color={Colors.black} />
+            <Ionicons name="arrow-back" size={24} color={Colors.black} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Cart</Text>
           <View style={{ width: 40 }} />
         </View>
         
         <View style={styles.emptyCart}>
-          <Ionicons name=\"cart-outline\" size={80} color={Colors.lightGray} />
+          <Ionicons name="cart-outline" size={80} color={Colors.lightGray} />
           <Text style={styles.emptyText}>Your cart is empty</Text>
           <TouchableOpacity
             style={styles.browseButton}
@@ -66,7 +66,7 @@ export default function CartScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name=\"arrow-back\" size={24} color={Colors.black} />
+          <Ionicons name="arrow-back" size={24} color={Colors.black} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Cart</Text>
         <TouchableOpacity onPress={clearCart}>
@@ -76,7 +76,7 @@ export default function CartScreen() {
       
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.restaurantInfo}>
-          <Ionicons name=\"restaurant\" size={20} color={Colors.sage} />
+          <Ionicons name="restaurant" size={20} color={Colors.sage} />
           <Text style={styles.restaurantName}>{restaurant_name}</Text>
         </View>
         
@@ -84,7 +84,7 @@ export default function CartScreen() {
           {items.map((item) => (
             <View key={item.item_id} style={styles.item}>
               {item.image && (
-                <Image source={{ uri: item.image }} style={styles.itemImage} resizeMode=\"cover\" />
+                <Image source={{ uri: item.image }} style={styles.itemImage} resizeMode="cover" />
               )}
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.name}</Text>
@@ -95,21 +95,21 @@ export default function CartScreen() {
                   style={styles.quantityButton}
                   onPress={() => updateQuantity(item.item_id, item.quantity - 1)}
                 >
-                  <Ionicons name=\"remove\" size={16} color={Colors.sage} />
+                  <Ionicons name="remove" size={16} color={Colors.sage} />
                 </TouchableOpacity>
                 <Text style={styles.quantity}>{item.quantity}</Text>
                 <TouchableOpacity
                   style={styles.quantityButton}
                   onPress={() => updateQuantity(item.item_id, item.quantity + 1)}
                 >
-                  <Ionicons name=\"add\" size={16} color={Colors.sage} />
+                  <Ionicons name="add" size={16} color={Colors.sage} />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => removeItem(item.item_id)}
                 style={styles.removeButton}
               >
-                <Ionicons name=\"trash-outline\" size={20} color={Colors.error} />
+                <Ionicons name="trash-outline" size={20} color={Colors.error} />
               </TouchableOpacity>
             </View>
           ))}

@@ -1,7 +1,6 @@
-import Constants from 'expo-constants';
 import { useAuthStore } from '../store/authStore';
 
-const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 export const api = {
   // Auth

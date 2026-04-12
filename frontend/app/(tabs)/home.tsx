@@ -67,7 +67,7 @@ export default function HomeScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size=\"large\" color={Colors.sage} />
+        <ActivityIndicator size="large" color={Colors.sage} />
       </View>
     );
   }
@@ -90,7 +90,7 @@ export default function HomeScreen() {
             style={styles.cartButton}
             onPress={() => router.push('/cart')}
           >
-            <Ionicons name=\"cart\" size={24} color={Colors.black} />
+            <Ionicons name="cart" size={24} color={Colors.black} />
             {itemCount > 0 && (
               <View style={styles.cartBadge}>
                 <Text style={styles.cartBadgeText}>{itemCount}</Text>
@@ -105,14 +105,14 @@ export default function HomeScreen() {
             style={styles.aiCard}
             onPress={() => router.push('/search?tab=randomizer')}
           >
-            <Ionicons name=\"dice\" size={24} color={Colors.sage} />
+            <Ionicons name="dice" size={24} color={Colors.sage} />
             <Text style={styles.aiCardText}>What should I eat?</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.aiCard}
             onPress={() => router.push('/search?tab=mood')}
           >
-            <Ionicons name=\"happy\" size={24} color={Colors.sage} />
+            <Ionicons name="happy" size={24} color={Colors.sage} />
             <Text style={styles.aiCardText}>Mood-based</Text>
           </TouchableOpacity>
         </View>
@@ -162,12 +162,12 @@ export default function HomeScreen() {
                 <Image
                   source={{ uri: restaurant.image }}
                   style={styles.featuredImage}
-                  resizeMode=\"cover\"
+                  resizeMode="cover"
                 />
                 <View style={styles.featuredInfo}>
                   <Text style={styles.restaurantName}>{restaurant.name}</Text>
                   <View style={styles.restaurantMeta}>
-                    <Ionicons name=\"star\" size={14} color={Colors.sage} />
+                    <Ionicons name="star" size={14} color={Colors.sage} />
                     <Text style={styles.rating}>{restaurant.rating}</Text>
                     <Text style={styles.metaDivider}>•</Text>
                     <Text style={styles.deliveryTime}>{restaurant.delivery_time}</Text>
@@ -194,7 +194,7 @@ export default function HomeScreen() {
                 <Image
                   source={{ uri: restaurant.image }}
                   style={styles.restaurantImage}
-                  resizeMode=\"cover\"
+                  resizeMode="cover"
                 />
                 <View style={styles.restaurantInfo}>
                   <Text style={styles.restaurantNameSmall}>{restaurant.name}</Text>
@@ -202,7 +202,7 @@ export default function HomeScreen() {
                     {restaurant.description}
                   </Text>
                   <View style={styles.restaurantMeta}>
-                    <Ionicons name=\"star\" size={14} color={Colors.sage} />
+                    <Ionicons name="star" size={14} color={Colors.sage} />
                     <Text style={styles.rating}>{restaurant.rating}</Text>
                     <Text style={styles.metaDivider}>•</Text>
                     <Text style={styles.deliveryTime}>{restaurant.delivery_time}</Text>

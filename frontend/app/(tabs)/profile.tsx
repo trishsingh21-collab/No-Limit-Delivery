@@ -107,7 +107,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size=\"large\" color={Colors.sage} />
+        <ActivityIndicator size="large" color={Colors.sage} />
       </View>
     );
   }
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.notLoggedIn}>
-          <Ionicons name=\"person-circle-outline\" size={80} color={Colors.lightGray} />
+          <Ionicons name="person-circle-outline" size={80} color={Colors.lightGray} />
           <Text style={styles.notLoggedInText}>Not logged in</Text>
           <TouchableOpacity
             style={styles.loginButton}
@@ -135,7 +135,7 @@ export default function ProfileScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.profileIconContainer}>
-            <Ionicons name=\"person\" size={40} color={Colors.sage} />
+            <Ionicons name="person" size={40} color={Colors.sage} />
           </View>
           <Text style={styles.name}>{user.name}</Text>
           <Text style={styles.email}>{user.email}</Text>
@@ -173,7 +173,7 @@ export default function ProfileScreen() {
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
               </View>
-              <Ionicons name=\"chevron-forward\" size={20} color={Colors.gray} />
+              <Ionicons name="chevron-forward" size={20} color={Colors.gray} />
             </TouchableOpacity>
           ))}
         </View>
@@ -183,7 +183,7 @@ export default function ProfileScreen() {
           style={styles.logoutButton}
           onPress={handleLogout}
         >
-          <Ionicons name=\"log-out-outline\" size={20} color={Colors.error} />
+          <Ionicons name="log-out-outline" size={20} color={Colors.error} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
         

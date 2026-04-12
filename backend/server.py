@@ -586,7 +586,11 @@ async def get_recommendations(
 async def food_randomizer():
     """What should I eat? AI randomizer"""
     # Get random restaurants
-    pipeline = [{"$match": {"active": True}}, {"$sample": {"size": 10}}]
+    pipeline = [
+        {"$match": {"active": True}}, 
+        {"$sample": {"size": 10}},
+        {"$project": {"_id": 0}}
+    ]
     restaurants = await db.restaurants.aggregate(pipeline).to_list(10)
     
     restaurant_list = ", ".join([f"{r['name']} ({r['cuisine_type']})" for r in restaurants])
