@@ -5,8 +5,16 @@ Tests: Auth, Restaurants, Menu, Orders, AI features
 import pytest
 import requests
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load frontend .env to get EXPO_PUBLIC_BACKEND_URL
+frontend_env = Path(__file__).parent.parent.parent / 'frontend' / '.env'
+load_dotenv(frontend_env)
 
 BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/')
+if not BASE_URL:
+    raise ValueError("EXPO_PUBLIC_BACKEND_URL not found in environment")
 
 class TestAuth:
     """Authentication endpoint tests"""
@@ -293,6 +301,45 @@ class TestOrders:
         assert isinstance(data, list), "Orders should be a list"
         # User should have at least one order from previous test
         assert len(data) >= 0
+
+
+class TestProfile:
+    """Profile endpoint tests"""
+    
+    @pytest.fixture
+    def auth_token(self):
+        """Login with test@demo.com"""
+        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            "email": "test@demo.com",
+            "password": "test123"
+        })
+        if login_response.status_code != 200:
+            # Create test user if doesn't exist
+            requests.post(f"{BASE_URL}/api/auth/signup", json={
+                "email": "test@demo.com",
+                "password": "test123",
+                "name": "Test User"
+            })
+            login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+                "email": "test@demo.com",
+                "password": "test123"
+            })
+        return login_response.json()["session_token"]
+    
+    def test_get_profile(self, auth_token):
+        """Test GET /api/profile returns user profile with order_count"""
+        response = requests.get(
+            f"{BASE_URL}/api/profile",
+            headers={"Authorization": f"Bearer {auth_token}"}
+        )
+        assert response.status_code == 200, f"Get profile failed: {response.text}"
+        
+        data = response.json()
+        assert "email" in data
+        assert "name" in data
+        assert "loyalty_points" in data
+        assert "order_count" in data
+        assert isinstance(data["order_count"], int)
 
 
 class TestAIFeatures:
