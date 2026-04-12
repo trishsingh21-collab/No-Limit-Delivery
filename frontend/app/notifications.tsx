@@ -81,13 +81,13 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.white },
+  container: { flex: 1, backgroundColor: Colors.background },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
   backBtn: { padding: Spacing.sm },
   headerTitle: { ...Typography.h4, color: Colors.black },
   section: { paddingHorizontal: Spacing.xl, marginTop: Spacing.lg },
   sectionTitle: { ...Typography.bodySmall, fontWeight: '600', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 1, marginBottom: Spacing.sm },
-  card: { backgroundColor: Colors.white, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
+  card: { backgroundColor: Colors.background, borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', padding: Spacing.md },
   rowBorder: { borderBottomWidth: 1, borderBottomColor: Colors.borderLight },
   iconWrap: { width: 40, height: 40, borderRadius: 12, backgroundColor: Colors.sagePale, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.md },

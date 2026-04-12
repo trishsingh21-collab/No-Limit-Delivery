@@ -86,7 +86,7 @@ export default function PaymentMethodsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.white },
+  container: { flex: 1, backgroundColor: Colors.background },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
   backBtn: { padding: Spacing.sm },
   headerTitle: { ...Typography.h4, color: Colors.black },
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   card: { backgroundColor: Colors.paleGray, borderRadius: BorderRadius.xl, padding: Spacing.lg, marginBottom: Spacing.md, borderWidth: 1, borderColor: Colors.border },
   cardDefault: { borderColor: Colors.sage, backgroundColor: '#F8FBF8' },
   cardTop: { flexDirection: 'row', alignItems: 'center' },
-  cardIconWrap: { width: 48, height: 48, borderRadius: 12, backgroundColor: Colors.white, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.md },
+  cardIconWrap: { width: 48, height: 48, borderRadius: 12, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.md },
   cardInfo: { flex: 1 },
   cardType: { ...Typography.body, fontWeight: '600', color: Colors.black },
   cardNumber: { ...Typography.bodySmall, color: Colors.textSecondary, marginTop: 2, letterSpacing: 1 },

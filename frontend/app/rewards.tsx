@@ -249,13 +249,13 @@ export default function RewardsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...Typography.h4,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   tierCard: {
     margin: Spacing.xl,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...Typography.h4,
     fontSize: 18,
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.md,
   },
   tiersGrid: {
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   },
   tierBadge: {
     width: '48%',
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   rewardCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     borderWidth: 1,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   rewardName: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   rewardDescription: {
     ...Typography.caption,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   redeemBtnDisabled: {
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
   },
   redeemBtnText: {
     ...Typography.bodySmall,
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
   },
   earnIcon: {

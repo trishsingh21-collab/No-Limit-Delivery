@@ -155,13 +155,13 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: Spacing.xl,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...Typography.h3,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   emptyState: {
     alignItems: 'center',
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxl,
   },
   orderCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   restaurantName: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
     flex: 1,
   },
   statusBadge: {
@@ -262,6 +262,6 @@ const styles = StyleSheet.create({
   orderTotal: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
 });

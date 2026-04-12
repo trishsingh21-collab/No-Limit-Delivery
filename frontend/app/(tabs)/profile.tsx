@@ -176,13 +176,13 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   notLoggedIn: {
     flex: 1,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   userSection: {
     flexDirection: 'row',
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 20,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   userEmail: {
     ...Typography.bodySmall,
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   rewardsTitle: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   rewardsSubtitle: {
     ...Typography.caption,
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   menuCard: {
     marginHorizontal: Spacing.xl,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: Colors.border,
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   },
   menuTitle: {
     ...Typography.body,
-    color: Colors.black,
+    color: Colors.textPrimary,
     flex: 1,
     marginLeft: Spacing.md,
   },
@@ -330,8 +330,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: '#FFE0E0',
-    backgroundColor: '#FFF5F5',
+    borderColor: 'rgba(231,76,60,0.3)',
+    backgroundColor: 'rgba(231,76,60,0.1)',
     gap: Spacing.sm,
   },
   logoutText: {

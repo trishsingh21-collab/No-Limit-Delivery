@@ -7,17 +7,25 @@ import { View, Text, StyleSheet } from 'react-native';
 
 export default function TabLayout() {
   const itemCount = useCartStore(state => state.getItemCount());
-  
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.sage,
-        tabBarInactiveTintColor: Colors.gray,
+        tabBarInactiveTintColor: Colors.textSecondary,
         tabBarStyle: {
+          backgroundColor: 'rgba(10, 10, 10, 0.95)',
           borderTopColor: Colors.border,
-          height: 60,
-          paddingBottom: 8,
+          borderTopWidth: 1,
+          height: 64,
+          paddingBottom: 10,
+          paddingTop: 6,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '500',
+          letterSpacing: 0.5,
         },
       }}
     >
@@ -26,16 +34,16 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Ionicons name="home-outline" size={22} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: 'Discover',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={size} color={color} />
+            <Ionicons name="search-outline" size={22} color={color} />
           ),
         }}
       />
@@ -44,7 +52,7 @@ export default function TabLayout() {
         options={{
           title: 'Orders',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt" size={size} color={color} />
+            <Ionicons name="receipt-outline" size={22} color={color} />
           ),
         }}
       />
@@ -54,7 +62,7 @@ export default function TabLayout() {
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
             <View>
-              <Ionicons name="person" size={size} color={color} />
+              <Ionicons name="person-outline" size={22} color={color} />
               {itemCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{itemCount}</Text>
@@ -71,8 +79,8 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   badge: {
     position: 'absolute',
-    right: -6,
-    top: -3,
+    right: -8,
+    top: -4,
     backgroundColor: Colors.sage,
     borderRadius: 10,
     width: 18,
@@ -81,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    color: Colors.white,
+    color: Colors.textInverse,
     fontSize: 10,
     fontWeight: '600',
   },

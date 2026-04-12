@@ -106,13 +106,13 @@ export default function AddressesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.white },
+  container: { flex: 1, backgroundColor: Colors.background },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
   backBtn: { padding: Spacing.sm },
   headerTitle: { ...Typography.h4, color: Colors.black },
   formCard: { margin: Spacing.xl, padding: Spacing.lg, backgroundColor: Colors.paleGray, borderRadius: BorderRadius.xl },
   formTitle: { ...Typography.h4, fontSize: 18, color: Colors.black, marginBottom: Spacing.md },
-  input: { borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.lg, paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, ...Typography.body, color: Colors.black, backgroundColor: Colors.white, marginBottom: Spacing.sm },
+  input: { borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.lg, paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, ...Typography.body, color: Colors.black, backgroundColor: Colors.background, marginBottom: Spacing.sm },
   row: { flexDirection: 'row' },
   saveBtn: { backgroundColor: Colors.sage, paddingVertical: Spacing.md, borderRadius: BorderRadius.lg, alignItems: 'center', marginTop: Spacing.sm },
   saveBtnText: { ...Typography.button, color: Colors.white },

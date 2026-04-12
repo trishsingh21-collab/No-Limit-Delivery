@@ -339,13 +339,13 @@ export default function RestaurantDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   errorText: {
     ...Typography.body,
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   heroImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   infoCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     marginTop: -30,
     marginHorizontal: Spacing.md,
     borderRadius: BorderRadius.xl,
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   restaurantName: {
     fontSize: 24,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   restaurantDescription: {
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   metaValue: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   metaLabel: {
     ...Typography.bodySmall,
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   activeTabText: {
-    color: Colors.black,
+    color: Colors.textPrimary,
     fontWeight: '600',
   },
   menuSection: {
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     marginRight: Spacing.sm,
   },
   activeCategoryChip: {
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
   menuCategoryTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
     letterSpacing: 1,
     marginBottom: Spacing.md,
   },
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
   menuItemName: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.xs,
   },
   menuItemDescription: {
@@ -545,10 +545,10 @@ const styles = StyleSheet.create({
   menuItemPrice: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   calorieBadge: {
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: BorderRadius.sm,
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     marginBottom: Spacing.xs,
   },
   addButton: {
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
   },
   reviewCard: {
     padding: Spacing.md,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
   },
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
   reviewName: {
     ...Typography.bodySmall,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   reviewStars: {
     flexDirection: 'row',

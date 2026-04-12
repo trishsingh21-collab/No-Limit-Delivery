@@ -309,13 +309,13 @@ export default function OrderTrackingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   errorText: {
     ...Typography.h4,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...Typography.h4,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   statusCard: {
     margin: Spacing.xl,
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   etaBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...Typography.h4,
     fontSize: 18,
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.md,
   },
   timeline: {
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   timelineLabelCurrent: {
-    color: Colors.black,
+    color: Colors.textPrimary,
     fontWeight: '700',
   },
   timelineSubtext: {
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   detailCard: {
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   detailLabel: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   orderItem: {
     flexDirection: 'row',
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
   },
   orderItemPrice: {
     ...Typography.bodySmall,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   divider: {
     height: 1,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   totalLabel: {
     ...Typography.body,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   totalValue: {
     fontSize: 18,
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
   },
   addressCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.md,
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   addressTitle: {
     ...Typography.bodySmall,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: 2,
   },
   addressText: {

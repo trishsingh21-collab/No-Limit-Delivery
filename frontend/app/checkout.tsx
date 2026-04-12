@@ -259,7 +259,7 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   emptyState: {
     flex: 1,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...Typography.h4,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   section: {
     paddingHorizontal: Spacing.xl,
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...Typography.h4,
     fontSize: 18,
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.md,
   },
   restaurantBanner: {
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   rowInputs: {
     flexDirection: 'row',
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...Typography.body,
     paddingVertical: Spacing.md,
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginLeft: Spacing.sm,
   },
   paymentCard: {
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.sage,
     borderRadius: BorderRadius.lg,
-    backgroundColor: '#F8FBF8',
+    backgroundColor: Colors.surface,
   },
   paymentLeft: {
     flexDirection: 'row',
@@ -367,14 +367,14 @@ const styles = StyleSheet.create({
   paymentTitle: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   paymentSub: {
     ...Typography.caption,
     color: Colors.textSecondary,
   },
   summaryCard: {
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
   },
@@ -385,12 +385,12 @@ const styles = StyleSheet.create({
   },
   summaryItemName: {
     ...Typography.body,
-    color: Colors.black,
+    color: Colors.textPrimary,
     flex: 1,
   },
   summaryItemPrice: {
     ...Typography.body,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   divider: {
     height: 1,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     ...Typography.body,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   totalRow: {
     flexDirection: 'row',
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
   totalLabel: {
     ...Typography.body,
     fontWeight: '700',
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   totalValue: {
     fontSize: 20,

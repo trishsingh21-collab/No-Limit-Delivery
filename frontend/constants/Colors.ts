@@ -1,45 +1,50 @@
-// Design System - Black, White, and Sage Color Palette
+// Design System - Premium Dark Luxury Theme
+// "No Limit Delivery" - High-end concierge service aesthetic
 
 export const Colors = {
-  // Primary Colors
-  sage: '#87A96B',
-  sageDark: '#6B8A4F',
-  sageLight: '#A8C48F',
-  sagePale: '#D4E4C7',
-  
-  // Neutrals
-  black: '#000000',
-  charcoal: '#1A1A1A',
-  darkGray: '#333333',
+  // Primary - Muted Sage
+  sage: '#A3B18A',
+  sageDark: '#8C9C72',
+  sageLight: '#B8C9A0',
+  sagePale: 'rgba(163, 177, 138, 0.15)',
+  sageGlow: 'rgba(163, 177, 138, 0.4)',
+
+  // Dark Backgrounds
+  black: '#0A0A0A',
+  charcoal: '#141414',
+  darkGray: '#1A1A1A',
+  surface: '#141414',
+
+  // Light Neutrals
   gray: '#666666',
-  lightGray: '#CCCCCC',
-  paleGray: '#F5F5F5',
+  lightGray: '#333333',
+  paleGray: '#1A1A1A',
   white: '#FFFFFF',
-  
-  // Semantic Colors
-  success: '#87A96B',
+
+  // Semantic
+  success: '#A3B18A',
   error: '#E74C3C',
-  warning: '#F39C12',
-  info: '#87A96B',
-  
+  warning: '#F5A623',
+  info: '#A3B18A',
+
   // Backgrounds
-  background: '#FFFFFF',
-  surface: '#F5F5F5',
-  card: '#FFFFFF',
-  
+  background: '#0A0A0A',
+  card: '#141414',
+
   // Text
-  textPrimary: '#000000',
-  textSecondary: '#666666',
-  textTertiary: '#999999',
-  textInverse: '#FFFFFF',
-  
+  textPrimary: '#FFFFFF',
+  textSecondary: '#A0A0A0',
+  textTertiary: '#666666',
+  textInverse: '#0A0A0A',
+
   // Borders
-  border: '#E0E0E0',
-  borderLight: '#F0F0F0',
-  
+  border: 'rgba(255, 255, 255, 0.08)',
+  borderLight: 'rgba(255, 255, 255, 0.05)',
+
   // Overlays
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  overlayLight: 'rgba(0, 0, 0, 0.3)',
+  overlay: 'rgba(0, 0, 0, 0.7)',
+  overlayLight: 'rgba(0, 0, 0, 0.4)',
+  glass: 'rgba(10, 10, 10, 0.7)',
 };
 
 export const Spacing = {
@@ -56,48 +61,57 @@ export const BorderRadius = {
   md: 8,
   lg: 12,
   xl: 16,
+  xxl: 24,
   full: 999,
 };
 
 export const Typography = {
   h1: {
-    fontSize: 32,
-    fontWeight: '700' as const,
-    lineHeight: 40,
+    fontSize: 36,
+    fontWeight: '300' as const,
+    lineHeight: 44,
+    letterSpacing: -1,
   },
   h2: {
     fontSize: 28,
-    fontWeight: '700' as const,
+    fontWeight: '300' as const,
     lineHeight: 36,
+    letterSpacing: -0.5,
   },
   h3: {
-    fontSize: 24,
-    fontWeight: '600' as const,
-    lineHeight: 32,
+    fontSize: 22,
+    fontWeight: '500' as const,
+    lineHeight: 30,
   },
   h4: {
-    fontSize: 20,
-    fontWeight: '600' as const,
-    lineHeight: 28,
+    fontSize: 18,
+    fontWeight: '500' as const,
+    lineHeight: 26,
   },
   body: {
-    fontSize: 16,
-    fontWeight: '400' as const,
-    lineHeight: 24,
+    fontSize: 15,
+    fontWeight: '300' as const,
+    lineHeight: 22,
   },
   bodySmall: {
-    fontSize: 14,
-    fontWeight: '400' as const,
-    lineHeight: 20,
+    fontSize: 13,
+    fontWeight: '300' as const,
+    lineHeight: 18,
   },
   caption: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '400' as const,
-    lineHeight: 16,
+    lineHeight: 14,
+  },
+  overline: {
+    fontSize: 11,
+    fontWeight: '500' as const,
+    lineHeight: 14,
+    letterSpacing: 2,
   },
   button: {
-    fontSize: 16,
-    fontWeight: '600' as const,
-    lineHeight: 24,
+    fontSize: 15,
+    fontWeight: '500' as const,
+    lineHeight: 22,
   },
 };

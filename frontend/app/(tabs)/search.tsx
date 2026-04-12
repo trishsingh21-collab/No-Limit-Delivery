@@ -266,7 +266,7 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: Spacing.xl,
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...Typography.h3,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   tabs: {
     flexDirection: 'row',
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.xl,
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
   },
   searchIcon: {
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...Typography.body,
     paddingVertical: Spacing.md,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   filters: {
     paddingLeft: Spacing.xl,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     marginRight: Spacing.sm,
   },
   activeFilterChip: {
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   },
   moodTitle: {
     ...Typography.h4,
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.md,
   },
   moodGrid: {
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
   moodCard: {
     width: '47%',
     alignItems: 'center',
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
   },
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   },
   restaurantCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
     overflow: 'hidden',
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   restaurantImage: {
     width: 100,
     height: 100,
-    backgroundColor: Colors.paleGray,
+    backgroundColor: Colors.surface,
   },
   restaurantInfo: {
     flex: 1,
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   restaurantName: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginBottom: Spacing.xs,
   },
   description: {

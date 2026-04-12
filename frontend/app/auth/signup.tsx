@@ -146,7 +146,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.h2,
-    color: Colors.black,
+    color: Colors.textPrimary,
     marginTop: Spacing.md,
   },
   subtitle: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
     marginBottom: Spacing.md,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
   inputIcon: {
     marginRight: Spacing.sm,
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...Typography.body,
     paddingVertical: Spacing.md,
-    color: Colors.black,
+    color: Colors.textPrimary,
   },
   button: {
     backgroundColor: Colors.sage,
