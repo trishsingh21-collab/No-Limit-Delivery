@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   heroImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     marginRight: Spacing.sm,
   },
   activeCategoryChip: {
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   calorieBadge: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: BorderRadius.sm,
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     marginBottom: Spacing.xs,
   },
   addButton: {
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
   },
   reviewCard: {
     padding: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
   },

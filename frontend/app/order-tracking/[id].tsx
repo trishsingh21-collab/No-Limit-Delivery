@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   detailCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
   },
   addressCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.md,

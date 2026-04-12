@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.sage,
     borderRadius: BorderRadius.lg,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
   },
   paymentLeft: {
     flexDirection: 'row',
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   summaryCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
   },

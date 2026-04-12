@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.xl,
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
   },
   searchIcon: {
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     marginRight: Spacing.sm,
   },
   activeFilterChip: {
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
   moodCard: {
     width: '47%',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
   },
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   restaurantImage: {
     width: 100,
     height: 100,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
   },
   restaurantInfo: {
     flex: 1,

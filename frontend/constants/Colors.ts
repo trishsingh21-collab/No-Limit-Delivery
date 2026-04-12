@@ -1,50 +1,49 @@
-// Design System - Premium Dark Luxury Theme
-// "No Limit Delivery" - High-end concierge service aesthetic
+// Design System - Premium Sage & White with Gradient Feel
+// "No Limit Delivery" - Elegant, warm, premium
 
 export const Colors = {
-  // Primary - Muted Sage
-  sage: '#A3B18A',
-  sageDark: '#8C9C72',
-  sageLight: '#B8C9A0',
-  sagePale: 'rgba(163, 177, 138, 0.15)',
-  sageGlow: 'rgba(163, 177, 138, 0.4)',
+  // Primary Sage
+  sage: '#87A96B',
+  sageDark: '#6B8A4F',
+  sageLight: '#A8C48F',
+  sagePale: 'rgba(135, 169, 107, 0.12)',
+  sageGlow: 'rgba(135, 169, 107, 0.25)',
+  sageMuted: '#B8C9A0',
 
-  // Dark Backgrounds
-  black: '#0A0A0A',
-  charcoal: '#141414',
-  darkGray: '#1A1A1A',
-  surface: '#141414',
+  // Backgrounds - Warm sage-gray gradient feel
+  background: '#F0F2ED',     // Soft sage-gray
+  surface: '#FFFFFF',         // White cards
+  surfaceAlt: '#E8EBE4',     // Slightly darker sage-gray
+  card: '#FFFFFF',
 
-  // Light Neutrals
-  gray: '#666666',
-  lightGray: '#333333',
-  paleGray: '#1A1A1A',
+  // Neutrals
+  black: '#1A1A1A',
+  charcoal: '#2A2A2A',
+  darkGray: '#3A3A3A',
+  gray: '#7A7A7A',
+  lightGray: '#C8C8C8',
+  paleGray: '#E8EBE4',
   white: '#FFFFFF',
 
   // Semantic
-  success: '#A3B18A',
-  error: '#E74C3C',
-  warning: '#F5A623',
-  info: '#A3B18A',
-
-  // Backgrounds
-  background: '#0A0A0A',
-  card: '#141414',
+  success: '#87A96B',
+  error: '#D94F4F',
+  warning: '#E8A838',
+  info: '#87A96B',
 
   // Text
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A0A0A0',
-  textTertiary: '#666666',
-  textInverse: '#0A0A0A',
+  textPrimary: '#1A1A1A',
+  textSecondary: '#6B6B6B',
+  textTertiary: '#999999',
+  textInverse: '#FFFFFF',
 
   // Borders
-  border: 'rgba(255, 255, 255, 0.08)',
-  borderLight: 'rgba(255, 255, 255, 0.05)',
+  border: 'rgba(0, 0, 0, 0.08)',
+  borderLight: 'rgba(0, 0, 0, 0.04)',
 
   // Overlays
-  overlay: 'rgba(0, 0, 0, 0.7)',
-  overlayLight: 'rgba(0, 0, 0, 0.4)',
-  glass: 'rgba(10, 10, 10, 0.7)',
+  overlay: 'rgba(0, 0, 0, 0.5)',
+  overlayLight: 'rgba(0, 0, 0, 0.3)',
 };
 
 export const Spacing = {
@@ -67,51 +66,50 @@ export const BorderRadius = {
 
 export const Typography = {
   h1: {
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: '300' as const,
-    lineHeight: 44,
-    letterSpacing: -1,
+    lineHeight: 42,
+    letterSpacing: -0.5,
   },
   h2: {
-    fontSize: 28,
-    fontWeight: '300' as const,
-    lineHeight: 36,
-    letterSpacing: -0.5,
+    fontSize: 26,
+    fontWeight: '400' as const,
+    lineHeight: 34,
   },
   h3: {
     fontSize: 22,
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
     lineHeight: 30,
   },
   h4: {
     fontSize: 18,
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
     lineHeight: 26,
   },
   body: {
     fontSize: 15,
-    fontWeight: '300' as const,
+    fontWeight: '400' as const,
     lineHeight: 22,
   },
   bodySmall: {
     fontSize: 13,
-    fontWeight: '300' as const,
+    fontWeight: '400' as const,
     lineHeight: 18,
   },
   caption: {
     fontSize: 11,
-    fontWeight: '400' as const,
+    fontWeight: '500' as const,
     lineHeight: 14,
   },
   overline: {
     fontSize: 11,
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
     lineHeight: 14,
     letterSpacing: 2,
   },
   button: {
     fontSize: 15,
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
     lineHeight: 22,
   },
 };

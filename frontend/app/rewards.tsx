@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   },
   tierBadge: {
     width: '48%',
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   redeemBtnDisabled: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
   },
   redeemBtnText: {
     ...Typography.bodySmall,
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
   },
   earnIcon: {
