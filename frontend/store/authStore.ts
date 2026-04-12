@@ -21,28 +21,40 @@ interface AuthState {
   updateUser: (user: User) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   session_token: null,
   isAuthenticated: false,
   isLoading: true,
-  
+
   login: async (user: User, token: string) => {
     await AsyncStorage.setItem('session_token', token);
-    set({ user, session_token: token, isAuthenticated: true });
+    set({ user, session_token: token, isAuthenticated: true, isLoading: false });
   },
-  
+
   logout: async () => {
     await AsyncStorage.removeItem('session_token');
     set({ user: null, session_token: null, isAuthenticated: false });
   },
-  
+
   loadUser: async () => {
     try {
       const token = await AsyncStorage.getItem('session_token');
       if (token) {
-        set({ session_token: token, isLoading: false });
-        // Will verify with /api/auth/me on app load
+        // Verify token with backend
+        const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const userData = await res.json();
+          set({ user: userData, session_token: token, isAuthenticated: true, isLoading: false });
+        } else {
+          // Token invalid, clear it
+          await AsyncStorage.removeItem('session_token');
+          set({ isLoading: false });
+        }
       } else {
         set({ isLoading: false });
       }
@@ -51,7 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: false });
     }
   },
-  
+
   updateUser: (user: User) => {
     set({ user });
   },

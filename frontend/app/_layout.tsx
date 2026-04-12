@@ -30,6 +30,11 @@ export default function RootLayout() {
         <Stack.Screen name="cart" />
         <Stack.Screen name="checkout" />
         <Stack.Screen name="rewards" />
+        <Stack.Screen name="addresses" />
+        <Stack.Screen name="payment-methods" />
+        <Stack.Screen name="notifications" />
+        <Stack.Screen name="my-reviews" />
+        <Stack.Screen name="help" />
         <Stack.Screen name="order-tracking/[id]" />
       </Stack>
     </>

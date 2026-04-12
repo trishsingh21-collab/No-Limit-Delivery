@@ -41,9 +41,9 @@ export default function SignupScreen() {
     try {
       const data = await api.signup(email.trim(), password, name.trim(), phone.trim() || undefined);
       await login(data.user, data.session_token);
-      setTimeout(() => {
-        router.replace('/(tabs)/home' as any);
-      }, 100);
+      requestAnimationFrame(() => {
+        router.replace('/home' as any);
+      });
     } catch (error: any) {
       Alert.alert('Signup Failed', error.message || 'Could not create account');
       setLoading(false);

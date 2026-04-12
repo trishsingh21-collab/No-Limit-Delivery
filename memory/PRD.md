@@ -1,99 +1,52 @@
-# No Limit Delivery - Product Requirements Document
+# No Limit Delivery - Product Requirements Document (Complete)
 
-## Overview
-Premium food delivery mobile app with AI-powered recommendations, real-time order tracking, and loyalty rewards.
+## App Overview
+**No Limit Delivery** - Premium food delivery mobile app with AI-powered recommendations, real-time order tracking, and loyalty rewards.
 
 ## Color Palette
-- **Primary**: Sage Green (#87A96B / #2E8B57)
-- **Secondary**: Black (#000000)
-- **Background**: White (#FFFFFF)
-- **Accents**: Pale Sage (#D4E4C7), Light Gray (#F5F5F5)
+- **Primary Sage**: #87A96B / #2E8B57
+- **Black**: #000000
+- **White**: #FFFFFF
+- **Pale Sage**: #D4E4C7 / #E8F5E9
+- **Accents**: #F5A623 (stars), #E74C3C (errors)
 
-## Core Features
+## Complete Screen Inventory (20+ screens)
 
-### 1. Authentication
-- **JWT Email/Password Auth**: Signup + Login with bcrypt hashing
-- **Google OAuth**: Emergent-managed Google Social Login
-- **Session Management**: 7-day session tokens stored in cookies + AsyncStorage
+### Authentication
+1. **Splash Screen** (`/index`) - Logo + tagline, auto-redirect
+2. **Onboarding** (`/onboarding`) - 3 swipeable slides
+3. **Login** (`/auth/login`) - Email/password + Google OAuth
+4. **Signup** (`/auth/signup`) - Name, email, phone, password
+5. **Google Callback** (`/auth/google-callback`) - OAuth exchange
 
-### 2. Home Screen
-- Personalized greeting (time-based)
-- AI Quick Actions (Randomizer, Mood-based suggestions)
-- Category browsing (Pizza, Burgers, Sushi, Healthy, Desserts, Chinese)
-- Featured restaurants carousel
-- All restaurants list with ratings, delivery time, price range
+### Main Tabs
+6. **Home** (`/(tabs)/home`) - Greeting, location, search, promo banner, categories (emoji), featured restaurants, all restaurants
+7. **Search** (`/(tabs)/search`) - Text search, cuisine filters, AI Randomizer tab, Mood-based tab
+8. **Orders** (`/(tabs)/orders`) - Order history with status badges
+9. **Profile** (`/(tabs)/profile`) - Avatar, loyalty banner, stats, menu items
 
-### 3. Search & Discovery
-- Text search with restaurant/cuisine matching
-- Cuisine filters (Italian, American, Japanese, etc.)
-- AI "What should I eat?" randomizer
-- Mood-based food suggestions (Comfort, Healthy, Quick, Indulgent)
+### Restaurant & Ordering
+10. **Restaurant Detail** (`/restaurant/[id]`) - Hero image, info card, available hours, Menu/Reviews tabs, menu items with add to cart
+11. **Cart** (`/cart`) - Items, quantity controls, summary, checkout button
+12. **Checkout** (`/checkout`) - Delivery address, payment, order summary, place order
+13. **Order Tracking** (`/order-tracking/[id]`) - Real-time Socket.IO, progress timeline, order details
 
-### 4. Restaurant Detail
-- Hero image with floating back/heart/share buttons
-- Restaurant info card (name, description, rating, delivery time, price)
-- **Available hours** display (weekdays/weekends + open/closed status)
-- Menu/Reviews tab navigation
-- Menu items grouped by category with:
-  - Name, description, price, calorie badge
-  - Thumbnail image
-  - Green "+" add to cart button
-- Floating cart button showing total
-
-### 5. Cart
-- Item list with images, prices, quantity controls (+/-)
-- Remove items
-- Clear cart
-- Order summary (subtotal, delivery fee, tax, total)
-- "Proceed to Checkout" button
-
-### 6. Checkout
-- Delivery address input (street, city, ZIP, instructions)
-- Payment method selection
-- Order summary
-- "Place Order" button → creates order → navigates to tracking
-
-### 7. Order Tracking (Real-time)
-- Socket.IO-based real-time status updates
-- Visual progress timeline (6 stages):
-  - Order Placed → Confirmed → Preparing → Ready → On the Way → Delivered
-- Estimated delivery time
-- Order details and delivery address
-- "Order Again" button when delivered
-
-### 8. AI Features (OpenAI GPT-5.2 via Emergent LLM Key)
-- Personalized recommendations based on order history
-- "What should I eat?" randomizer
-- Mood-based food suggestions
-
-### 9. Loyalty/Rewards
-- Points earned: 1 point per dollar spent
-- Points displayed on profile
-- (Future: Tiers, redemption options)
-
-### 10. Profile Dashboard
-- User info (name, email, phone)
-- Stats (orders, points, addresses)
-- Menu items: Delivery Addresses, Payment Methods, Rewards, Reviews, Settings, Help
-- Logout functionality
+### Profile Sub-screens
+14. **Loyalty Rewards** (`/rewards`) - Tiers (Bronze/Silver/Gold/Platinum), points, redeemable rewards, how to earn
+15. **Delivery Addresses** (`/addresses`) - Add/edit/delete/set default addresses
+16. **Payment Methods** (`/payment-methods`) - Card management with set default
+17. **Notifications** (`/notifications`) - Toggle settings for order updates, marketing, rewards
+18. **My Reviews** (`/my-reviews`) - Review history with ratings, empty state with how-to guide
+19. **Help & Support** (`/help`) - Contact options (email, phone, live chat), FAQ accordion, about section
 
 ## Tech Stack
-- **Frontend**: Expo (React Native), expo-router, Zustand, Socket.io-client
-- **Backend**: FastAPI, python-socketio, Motor (MongoDB)
+- **Frontend**: Expo SDK 54, expo-router, Zustand, Socket.io-client, React Native
+- **Backend**: FastAPI, python-socketio, Motor (MongoDB), bcrypt, emergentintegrations
 - **AI**: OpenAI GPT-5.2 via Emergent LLM Key
 - **Payments**: Stripe (mock mode, ready for real keys)
-- **Database**: MongoDB (15 pre-seeded restaurants)
+- **Database**: MongoDB (15 seeded restaurants with menus)
 - **Auth**: JWT + Google OAuth (Emergent-managed)
-
-## Database Collections
-- `users` - User profiles with loyalty points
-- `restaurants` - 15 seeded restaurants
-- `menu_items` - Menu items per restaurant
-- `orders` - User orders with status tracking
-- `reviews` - User reviews
-- `user_sessions` - Auth sessions
-- `payment_transactions` - Stripe payment records
 
 ## Test Credentials
 - Email: test@demo.com / Password: test123
-- Stripe test card: 4242 4242 4242 4242
+- Stripe test card: 4242 4242 4242 4242 (any expiry/CVC)

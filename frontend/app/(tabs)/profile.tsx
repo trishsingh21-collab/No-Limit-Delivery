@@ -84,11 +84,11 @@ export default function ProfileScreen() {
   }
 
   const menuItems = [
-    { icon: 'location-outline', title: 'Delivery Addresses', onPress: () => {} },
-    { icon: 'card-outline', title: 'Payment Methods', onPress: () => {} },
-    { icon: 'notifications-outline', title: 'Notifications', onPress: () => {} },
-    { icon: 'star-outline', title: 'My Reviews', onPress: () => {} },
-    { icon: 'help-circle-outline', title: 'Help & Support', onPress: () => {} },
+    { icon: 'location-outline', title: 'Delivery Addresses', onPress: () => router.push('/addresses' as any) },
+    { icon: 'card-outline', title: 'Payment Methods', onPress: () => router.push('/payment-methods' as any) },
+    { icon: 'notifications-outline', title: 'Notifications', onPress: () => router.push('/notifications' as any) },
+    { icon: 'star-outline', title: 'My Reviews', onPress: () => router.push('/my-reviews' as any) },
+    { icon: 'help-circle-outline', title: 'Help & Support', onPress: () => router.push('/help' as any) },
   ];
 
   return (
