@@ -22,17 +22,16 @@ export default function ProfileScreen() {
   const clearCart = useCartStore(state => state.clearCart);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     loadProfile();
   }, []);
-  
+
   const loadProfile = async () => {
     if (!session_token) {
       setLoading(false);
       return;
     }
-    
     try {
       const data = await api.getProfile(session_token);
       setProfile(data);
@@ -42,68 +41,23 @@ export default function ProfileScreen() {
       setLoading(false);
     }
   };
-  
+
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            if (session_token) {
-              await api.logout(session_token);
-            }
-            await logout();
-            clearCart();
-            router.replace('/auth/login');
-          },
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          if (session_token) await api.logout(session_token);
+          await logout();
+          clearCart();
+          router.replace('/auth/login' as any);
         },
-      ]
-    );
+      },
+    ]);
   };
-  
-  const menuItems = [
-    {
-      icon: 'location',
-      title: 'Delivery Addresses',
-      subtitle: `${profile?.addresses?.length || 0} saved addresses`,
-      onPress: () => {},
-    },
-    {
-      icon: 'card',
-      title: 'Payment Methods',
-      subtitle: `${profile?.payment_methods?.length || 0} saved cards`,
-      onPress: () => {},
-    },
-    {
-      icon: 'gift',
-      title: 'Rewards',
-      subtitle: `${profile?.loyalty_points || 0} points`,
-      onPress: () => {},
-    },
-    {
-      icon: 'star',
-      title: 'My Reviews',
-      subtitle: 'View all your reviews',
-      onPress: () => {},
-    },
-    {
-      icon: 'settings',
-      title: 'Settings',
-      subtitle: 'App preferences',
-      onPress: () => {},
-    },
-    {
-      icon: 'help-circle',
-      title: 'Help & Support',
-      subtitle: 'Get help or contact us',
-      onPress: () => {},
-    },
-  ];
-  
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -111,7 +65,7 @@ export default function ProfileScreen() {
       </View>
     );
   }
-  
+
   if (!user) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -120,7 +74,7 @@ export default function ProfileScreen() {
           <Text style={styles.notLoggedInText}>Not logged in</Text>
           <TouchableOpacity
             style={styles.loginButton}
-            onPress={() => router.push('/auth/login')}
+            onPress={() => router.push('/auth/login' as any)}
           >
             <Text style={styles.loginButtonText}>Sign In</Text>
           </TouchableOpacity>
@@ -128,20 +82,50 @@ export default function ProfileScreen() {
       </SafeAreaView>
     );
   }
-  
+
+  const menuItems = [
+    { icon: 'location-outline', title: 'Delivery Addresses', onPress: () => {} },
+    { icon: 'card-outline', title: 'Payment Methods', onPress: () => {} },
+    { icon: 'notifications-outline', title: 'Notifications', onPress: () => {} },
+    { icon: 'star-outline', title: 'My Reviews', onPress: () => {} },
+    { icon: 'help-circle-outline', title: 'Help & Support', onPress: () => {} },
+  ];
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.profileIconContainer}>
-            <Ionicons name="person" size={40} color={Colors.sage} />
-          </View>
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.email}>{user.email}</Text>
-          {user.phone && <Text style={styles.phone}>{user.phone}</Text>}
+          <Text style={styles.headerTitle}>Profile</Text>
         </View>
-        
+
+        {/* User Info */}
+        <View style={styles.userSection}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {user.name?.[0]?.toUpperCase() || 'U'}
+            </Text>
+          </View>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
+          </View>
+        </View>
+
+        {/* Loyalty Rewards Banner */}
+        <TouchableOpacity
+          testID="loyalty-rewards-btn"
+          style={styles.rewardsBanner}
+          onPress={() => router.push('/rewards' as any)}
+        >
+          <Text style={styles.rewardsTrophy}>🏆</Text>
+          <View style={styles.rewardsInfo}>
+            <Text style={styles.rewardsTitle}>Loyalty Rewards</Text>
+            <Text style={styles.rewardsSubtitle}>View your points & rewards</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={Colors.gray} />
+        </TouchableOpacity>
+
         {/* Stats */}
         <View style={styles.stats}>
           <View style={styles.statCard}>
@@ -157,37 +141,33 @@ export default function ProfileScreen() {
             <Text style={styles.statLabel}>Addresses</Text>
           </View>
         </View>
-        
+
         {/* Menu Items */}
-        <View style={styles.menu}>
+        <View style={styles.menuCard}>
           {menuItems.map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.menuItem}
+              style={[styles.menuItem, index < menuItems.length - 1 && styles.menuItemBorder]}
               onPress={item.onPress}
             >
-              <View style={styles.menuIcon}>
-                <Ionicons name={item.icon as any} size={22} color={Colors.sage} />
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.gray} />
+              <Ionicons name={item.icon as any} size={22} color={Colors.gray} />
+              <Text style={styles.menuTitle}>{item.title}</Text>
+              <Ionicons name="chevron-forward" size={18} color={Colors.lightGray} />
             </TouchableOpacity>
           ))}
         </View>
-        
-        {/* Logout */}
+
+        {/* Logout Button */}
         <TouchableOpacity
+          testID="logout-btn"
           style={styles.logoutButton}
           onPress={handleLogout}
         >
           <Ionicons name="log-out-outline" size={20} color={Colors.error} />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
-        
-        <Text style={styles.version}>Version 1.0.0</Text>
+
+        <View style={{ height: Spacing.xxl * 2 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -208,7 +188,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
   },
   notLoggedInText: {
     ...Typography.h4,
@@ -227,32 +206,73 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   header: {
-    alignItems: 'center',
-    paddingVertical: Spacing.xl,
     paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
   },
-  profileIconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: Colors.sagePale,
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.black,
+  },
+  userSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.lg,
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Colors.sage,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    marginRight: Spacing.md,
   },
-  name: {
-    ...Typography.h3,
+  avatarText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.white,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: '700',
     color: Colors.black,
-    marginBottom: Spacing.xs,
   },
-  email: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-  },
-  phone: {
+  userEmail: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
-    marginTop: Spacing.xs,
+    marginTop: 2,
+  },
+  rewardsBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.lg,
+    padding: Spacing.md,
+    backgroundColor: Colors.sagePale,
+    borderRadius: BorderRadius.lg,
+  },
+  rewardsTrophy: {
+    fontSize: 32,
+    marginRight: Spacing.md,
+  },
+  rewardsInfo: {
+    flex: 1,
+  },
+  rewardsTitle: {
+    ...Typography.body,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+  rewardsSubtitle: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
   stats: {
     flexDirection: 'row',
@@ -268,45 +288,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    ...Typography.h3,
+    fontSize: 22,
+    fontWeight: '700',
     color: Colors.sage,
-    marginBottom: Spacing.xs,
+    marginBottom: 2,
   },
   statLabel: {
     ...Typography.caption,
     color: Colors.textSecondary,
   },
-  menu: {
-    paddingHorizontal: Spacing.xl,
+  menuCard: {
+    marginHorizontal: Spacing.xl,
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
     marginBottom: Spacing.lg,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+  },
+  menuItemBorder: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderLight,
-  },
-  menuIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.sagePale,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.md,
-  },
-  menuContent: {
-    flex: 1,
   },
   menuTitle: {
     ...Typography.body,
     color: Colors.black,
-    marginBottom: 2,
-  },
-  menuSubtitle: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
+    flex: 1,
+    marginLeft: Spacing.md,
   },
   logoutButton: {
     flexDirection: 'row',
@@ -316,18 +330,12 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.error,
-    marginBottom: Spacing.md,
+    borderColor: '#FFE0E0',
+    backgroundColor: '#FFF5F5',
     gap: Spacing.sm,
   },
   logoutText: {
     ...Typography.button,
     color: Colors.error,
-  },
-  version: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xxl,
   },
 });

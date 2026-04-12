@@ -9,6 +9,7 @@ import {
   Dimensions,
   RefreshControl,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,7 +20,24 @@ import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - Spacing.xl * 2;
+
+const CATEGORIES = [
+  { name: 'Pizza', emoji: '🍕', cuisine: 'Italian' },
+  { name: 'Burgers', emoji: '🍔', cuisine: 'American' },
+  { name: 'Sushi', emoji: '🍣', cuisine: 'Japanese' },
+  { name: 'Mexican', emoji: '🌮', cuisine: 'Mexican' },
+  { name: 'Pasta', emoji: '🍝', cuisine: 'Italian' },
+  { name: 'Healthy', emoji: '🥗', cuisine: 'Healthy' },
+  { name: 'Asian', emoji: '🍜', cuisine: 'Chinese' },
+  { name: 'Desserts', emoji: '🍰', cuisine: 'Desserts' },
+];
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+};
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -29,16 +47,7 @@ export default function HomeScreen() {
   const [allRestaurants, setAllRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
-  const categories = [
-    { name: 'Pizza', icon: 'pizza', cuisine: 'Italian' },
-    { name: 'Burgers', icon: 'fast-food', cuisine: 'American' },
-    { name: 'Sushi', icon: 'fish', cuisine: 'Japanese' },
-    { name: 'Healthy', icon: 'leaf', cuisine: 'Healthy' },
-    { name: 'Desserts', icon: 'ice-cream', cuisine: 'Desserts' },
-    { name: 'Chinese', icon: 'restaurant', cuisine: 'Chinese' },
-  ];
-  
+
   const loadData = async () => {
     try {
       const [featured, all] = await Promise.all([
@@ -54,16 +63,16 @@ export default function HomeScreen() {
       setRefreshing(false);
     }
   };
-  
+
   useEffect(() => {
     loadData();
   }, []);
-  
+
   const onRefresh = () => {
     setRefreshing(true);
     loadData();
   };
-  
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -71,7 +80,7 @@ export default function HomeScreen() {
       </View>
     );
   }
-  
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
@@ -82,15 +91,16 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Hello, {user?.name || 'Guest'}!</Text>
-            <Text style={styles.subtitle}>What would you like to eat today?</Text>
+          <View style={styles.headerLeft}>
+            <Text style={styles.greeting}>{getGreeting()}</Text>
+            <Text style={styles.userName}>{user?.name || 'Guest'} 👋</Text>
           </View>
           <TouchableOpacity
+            testID="cart-button"
             style={styles.cartButton}
             onPress={() => router.push('/cart')}
           >
-            <Ionicons name="cart" size={24} color={Colors.black} />
+            <Ionicons name="cart-outline" size={26} color={Colors.black} />
             {itemCount > 0 && (
               <View style={styles.cartBadge}>
                 <Text style={styles.cartBadgeText}>{itemCount}</Text>
@@ -98,122 +108,169 @@ export default function HomeScreen() {
             )}
           </TouchableOpacity>
         </View>
-        
+
+        {/* Delivering to */}
+        <TouchableOpacity style={styles.locationRow}>
+          <Ionicons name="location" size={18} color={Colors.sage} />
+          <Text style={styles.locationLabel}>Delivering to</Text>
+          <Text style={styles.locationValue}>Current Location</Text>
+          <Ionicons name="chevron-down" size={16} color={Colors.gray} />
+        </TouchableOpacity>
+
+        {/* Search Bar */}
+        <TouchableOpacity
+          testID="search-bar"
+          style={styles.searchBar}
+          onPress={() => router.push('/(tabs)/search')}
+        >
+          <Ionicons name="search" size={20} color={Colors.gray} />
+          <Text style={styles.searchPlaceholder}>Search restaurants, food...</Text>
+          <TouchableOpacity style={styles.filterButton}>
+            <Ionicons name="options" size={20} color={Colors.white} />
+          </TouchableOpacity>
+        </TouchableOpacity>
+
+        {/* Promo Banner */}
+        <View style={styles.promoBanner}>
+          <View style={styles.promoContent}>
+            <Text style={styles.promoLabel}>LIMITED OFFER</Text>
+            <Text style={styles.promoTitle}>40% OFF</Text>
+            <Text style={styles.promoSubtitle}>On your first order</Text>
+            <View style={styles.promoCode}>
+              <Text style={styles.promoCodeText}>NOLIMIT40</Text>
+            </View>
+          </View>
+          <View style={styles.promoEmojis}>
+            <Text style={styles.promoEmoji1}>🍟</Text>
+            <Text style={styles.promoEmoji2}>🍔</Text>
+          </View>
+        </View>
+
         {/* AI Features */}
         <View style={styles.aiSection}>
           <TouchableOpacity
+            testID="ai-randomizer-btn"
             style={styles.aiCard}
             onPress={() => router.push('/search?tab=randomizer')}
           >
-            <Ionicons name="dice" size={24} color={Colors.sage} />
+            <Ionicons name="dice" size={22} color={Colors.sage} />
             <Text style={styles.aiCardText}>What should I eat?</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            testID="ai-mood-btn"
             style={styles.aiCard}
             onPress={() => router.push('/search?tab=mood')}
           >
-            <Ionicons name="happy" size={24} color={Colors.sage} />
+            <Ionicons name="happy" size={22} color={Colors.sage} />
             <Text style={styles.aiCardText}>Mood-based</Text>
           </TouchableOpacity>
         </View>
-        
+
         {/* Categories */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Categories</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.categoriesScroll}
-          >
-            {categories.map((category, index) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Categories</Text>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/search')}>
+              <Text style={styles.seeAll}>See all</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
+            {CATEGORIES.map((category, index) => (
               <TouchableOpacity
                 key={index}
+                testID={`category-${category.name.toLowerCase()}`}
                 style={styles.categoryCard}
-                onPress={() => router.push(`/search?cuisine=${category.cuisine}`)}
+                onPress={() => router.push(`/search?cuisine=${category.cuisine}` as any)}
               >
                 <View style={styles.categoryIcon}>
-                  <Ionicons name={category.icon as any} size={28} color={Colors.sage} />
+                  <Text style={styles.categoryEmoji}>{category.emoji}</Text>
                 </View>
                 <Text style={styles.categoryName}>{category.name}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
-        
+
         {/* Featured Restaurants */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Featured</Text>
-            <TouchableOpacity onPress={() => router.push('/search')}>
-              <Text style={styles.seeAll}>See All</Text>
+            <Text style={styles.sectionTitle}>Featured Restaurants</Text>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/search')}>
+              <Text style={styles.seeAll}>See all</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.featuredScroll}
-          >
-            {featuredRestaurants.map((restaurant) => (
-              <TouchableOpacity
-                key={restaurant.restaurant_id}
-                style={styles.featuredCard}
-                onPress={() => router.push(`/restaurant/${restaurant.restaurant_id}`)}
-              >
+          {featuredRestaurants.map((restaurant) => (
+            <TouchableOpacity
+              key={restaurant.restaurant_id}
+              testID={`restaurant-${restaurant.restaurant_id}`}
+              style={styles.featuredCard}
+              onPress={() => router.push(`/restaurant/${restaurant.restaurant_id}` as any)}
+            >
+              <View style={styles.featuredImageContainer}>
                 <Image
                   source={{ uri: restaurant.image }}
                   style={styles.featuredImage}
                   resizeMode="cover"
                 />
-                <View style={styles.featuredInfo}>
-                  <Text style={styles.restaurantName}>{restaurant.name}</Text>
-                  <View style={styles.restaurantMeta}>
-                    <Ionicons name="star" size={14} color={Colors.sage} />
-                    <Text style={styles.rating}>{restaurant.rating}</Text>
-                    <Text style={styles.metaDivider}>•</Text>
-                    <Text style={styles.deliveryTime}>{restaurant.delivery_time}</Text>
-                    <Text style={styles.metaDivider}>•</Text>
-                    <Text style={styles.priceRange}>{restaurant.price_range}</Text>
+                {restaurant.featured && (
+                  <View style={styles.promoBadge}>
+                    <Text style={styles.promoBadgeText}>PROMO</Text>
                   </View>
-                  <Text style={styles.cuisine}>{restaurant.cuisine_type}</Text>
+                )}
+              </View>
+              <View style={styles.featuredInfo}>
+                <View style={styles.featuredNameRow}>
+                  <Text style={styles.restaurantName}>{restaurant.name}</Text>
+                  <View style={styles.ratingBadge}>
+                    <Ionicons name="star" size={14} color={Colors.sage} />
+                    <Text style={styles.ratingText}>{restaurant.rating}</Text>
+                  </View>
                 </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                <Text style={styles.cuisine}>
+                  {restaurant.cuisine_type} {restaurant.description ? `• ${restaurant.description.substring(0, 40)}...` : ''}
+                </Text>
+                <View style={styles.metaRow}>
+                  <Ionicons name="time-outline" size={14} color={Colors.gray} />
+                  <Text style={styles.metaText}>{restaurant.delivery_time}</Text>
+                  <Ionicons name="bicycle-outline" size={14} color={Colors.gray} style={{ marginLeft: Spacing.md }} />
+                  <Text style={styles.metaText}>$2.99</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
-        
+
         {/* All Restaurants */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>All Restaurants</Text>
-          <View style={styles.restaurantList}>
-            {allRestaurants.slice(0, 10).map((restaurant) => (
-              <TouchableOpacity
-                key={restaurant.restaurant_id}
-                style={styles.restaurantCard}
-                onPress={() => router.push(`/restaurant/${restaurant.restaurant_id}`)}
-              >
-                <Image
-                  source={{ uri: restaurant.image }}
-                  style={styles.restaurantImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.restaurantInfo}>
-                  <Text style={styles.restaurantNameSmall}>{restaurant.name}</Text>
-                  <Text style={styles.description} numberOfLines={2}>
-                    {restaurant.description}
-                  </Text>
-                  <View style={styles.restaurantMeta}>
-                    <Ionicons name="star" size={14} color={Colors.sage} />
-                    <Text style={styles.rating}>{restaurant.rating}</Text>
-                    <Text style={styles.metaDivider}>•</Text>
-                    <Text style={styles.deliveryTime}>{restaurant.delivery_time}</Text>
-                    <Text style={styles.metaDivider}>•</Text>
-                    <Text style={styles.priceRange}>{restaurant.price_range}</Text>
-                  </View>
+          {allRestaurants.filter(r => !r.featured).slice(0, 8).map((restaurant) => (
+            <TouchableOpacity
+              key={restaurant.restaurant_id}
+              style={styles.listCard}
+              onPress={() => router.push(`/restaurant/${restaurant.restaurant_id}` as any)}
+            >
+              <Image
+                source={{ uri: restaurant.image }}
+                style={styles.listImage}
+                resizeMode="cover"
+              />
+              <View style={styles.listInfo}>
+                <Text style={styles.listName}>{restaurant.name}</Text>
+                <Text style={styles.listCuisine} numberOfLines={1}>{restaurant.cuisine_type} • {restaurant.description?.substring(0, 50)}</Text>
+                <View style={styles.metaRow}>
+                  <Ionicons name="star" size={12} color={Colors.sage} />
+                  <Text style={styles.metaTextSmall}>{restaurant.rating}</Text>
+                  <Text style={styles.metaDot}>•</Text>
+                  <Text style={styles.metaTextSmall}>{restaurant.delivery_time}</Text>
+                  <Text style={styles.metaDot}>•</Text>
+                  <Text style={styles.metaTextSmall}>{restaurant.price_range}</Text>
                 </View>
-              </TouchableOpacity>
-            ))}
-          </View>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
+
+        <View style={{ height: Spacing.xxl }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -236,20 +293,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.md,
-    paddingBottom: Spacing.lg,
   },
+  headerLeft: {},
   greeting: {
-    ...Typography.h3,
-    color: Colors.black,
-  },
-  subtitle: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
-    marginTop: Spacing.xs,
+  },
+  userName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.black,
+    marginTop: 2,
   },
   cartButton: {
     position: 'relative',
-    padding: Spacing.sm,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.paleGray,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cartBadge: {
     position: 'absolute',
@@ -266,7 +329,107 @@ const styles = StyleSheet.create({
   cartBadgeText: {
     color: Colors.white,
     fontSize: 10,
+    fontWeight: '700',
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.sm,
+    gap: 6,
+  },
+  locationLabel: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+  },
+  locationValue: {
+    ...Typography.bodySmall,
     fontWeight: '600',
+    color: Colors.black,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: Spacing.xl,
+    marginVertical: Spacing.md,
+    paddingLeft: Spacing.md,
+    paddingRight: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    backgroundColor: Colors.paleGray,
+    borderRadius: BorderRadius.lg,
+    height: 52,
+  },
+  searchPlaceholder: {
+    flex: 1,
+    ...Typography.body,
+    color: Colors.gray,
+    marginLeft: Spacing.sm,
+  },
+  filterButton: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.sage,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  promoBanner: {
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.lg,
+    backgroundColor: '#2E8B57',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    overflow: 'hidden',
+    minHeight: 160,
+  },
+  promoContent: {
+    flex: 1,
+    zIndex: 1,
+  },
+  promoLabel: {
+    ...Typography.caption,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginBottom: Spacing.xs,
+  },
+  promoTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: Colors.white,
+    marginBottom: Spacing.xs,
+  },
+  promoSubtitle: {
+    ...Typography.body,
+    color: 'rgba(255,255,255,0.9)',
+    marginBottom: Spacing.md,
+  },
+  promoCode: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    alignSelf: 'flex-start',
+  },
+  promoCodeText: {
+    ...Typography.body,
+    fontWeight: '700',
+    color: Colors.white,
+  },
+  promoEmojis: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: Spacing.md,
+    bottom: Spacing.md,
+    justifyContent: 'space-between',
+  },
+  promoEmoji1: {
+    fontSize: 40,
+    opacity: 0.8,
+  },
+  promoEmoji2: {
+    fontSize: 56,
+    opacity: 0.8,
   },
   aiSection: {
     flexDirection: 'row',
@@ -280,7 +443,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.sagePale,
-    padding: Spacing.md,
+    paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     gap: Spacing.sm,
   },
@@ -300,10 +463,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   sectionTitle: {
-    ...Typography.h4,
+    fontSize: 20,
+    fontWeight: '700',
     color: Colors.black,
-    paddingHorizontal: Spacing.xl,
-    marginBottom: Spacing.md,
   },
   seeAll: {
     ...Typography.bodySmall,
@@ -316,111 +478,138 @@ const styles = StyleSheet.create({
   categoryCard: {
     alignItems: 'center',
     marginRight: Spacing.md,
-    width: 80,
+    width: 76,
   },
   categoryIcon: {
     width: 64,
     height: 64,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.sagePale,
+    borderRadius: 20,
+    backgroundColor: '#E8F5E9',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.xs,
+  },
+  categoryEmoji: {
+    fontSize: 30,
   },
   categoryName: {
     ...Typography.caption,
     color: Colors.textSecondary,
     textAlign: 'center',
   },
-  featuredScroll: {
-    paddingLeft: Spacing.xl,
-  },
   featuredCard: {
-    width: CARD_WIDTH * 0.7,
-    marginRight: Spacing.md,
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.md,
     backgroundColor: Colors.white,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     overflow: 'hidden',
-    elevation: 2,
-    shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+  },
+  featuredImageContainer: {
+    position: 'relative',
   },
   featuredImage: {
     width: '100%',
-    height: 160,
+    height: 180,
     backgroundColor: Colors.paleGray,
+  },
+  promoBadge: {
+    position: 'absolute',
+    top: Spacing.md,
+    left: Spacing.md,
+    backgroundColor: Colors.sage,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.md,
+  },
+  promoBadgeText: {
+    ...Typography.caption,
+    color: Colors.white,
+    fontWeight: '700',
   },
   featuredInfo: {
     padding: Spacing.md,
   },
-  restaurantName: {
-    ...Typography.h4,
-    fontSize: 18,
-    color: Colors.black,
-    marginBottom: Spacing.xs,
-  },
-  restaurantMeta: {
+  featuredNameRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Spacing.xs,
   },
-  rating: {
+  restaurantName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.black,
+    flex: 1,
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.paleGray,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.md,
+    gap: 4,
+  },
+  ratingText: {
     ...Typography.bodySmall,
+    fontWeight: '700',
+    color: Colors.sage,
+  },
+  cuisine: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  metaText: {
+    ...Typography.caption,
     color: Colors.textSecondary,
     marginLeft: 4,
   },
-  metaDivider: {
-    ...Typography.bodySmall,
-    color: Colors.lightGray,
-    marginHorizontal: 6,
-  },
-  deliveryTime: {
-    ...Typography.bodySmall,
-    color: Colors.textSecondary,
-  },
-  priceRange: {
-    ...Typography.bodySmall,
-    color: Colors.textSecondary,
-  },
-  cuisine: {
-    ...Typography.caption,
-    color: Colors.sage,
-  },
-  restaurantList: {
-    paddingHorizontal: Spacing.xl,
-  },
-  restaurantCard: {
+  listCard: {
     flexDirection: 'row',
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.md,
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
-    marginBottom: Spacing.md,
     overflow: 'hidden',
-    elevation: 1,
-    shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
   },
-  restaurantImage: {
+  listImage: {
     width: 100,
     height: 100,
     backgroundColor: Colors.paleGray,
   },
-  restaurantInfo: {
+  listInfo: {
     flex: 1,
     padding: Spacing.md,
+    justifyContent: 'center',
   },
-  restaurantNameSmall: {
+  listName: {
     ...Typography.body,
     fontWeight: '600',
     color: Colors.black,
-    marginBottom: Spacing.xs,
+    marginBottom: 2,
   },
-  description: {
+  listCuisine: {
     ...Typography.caption,
     color: Colors.textSecondary,
     marginBottom: Spacing.xs,
+  },
+  metaTextSmall: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    marginLeft: 4,
+  },
+  metaDot: {
+    ...Typography.caption,
+    color: Colors.lightGray,
+    marginHorizontal: 4,
   },
 });

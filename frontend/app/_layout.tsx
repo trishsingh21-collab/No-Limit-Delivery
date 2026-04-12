@@ -29,6 +29,7 @@ export default function RootLayout() {
         <Stack.Screen name="restaurant/[id]" />
         <Stack.Screen name="cart" />
         <Stack.Screen name="checkout" />
+        <Stack.Screen name="rewards" />
         <Stack.Screen name="order-tracking/[id]" />
       </Stack>
     </>
