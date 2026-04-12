@@ -3,6 +3,13 @@ import { useAuthStore } from '../store/authStore';
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 export const api = {
+  // Services
+  getServices: async () => {
+    const res = await fetch(`${BACKEND_URL}/api/services`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  },
+  
   // Auth
   signup: async (email: string, password: string, name: string, phone?: string) => {
     const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {

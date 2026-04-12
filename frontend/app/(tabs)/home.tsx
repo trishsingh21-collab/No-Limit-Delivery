@@ -23,14 +23,22 @@ import { StaggerItem, SlideInView, FadeInView, BounceInView } from '../../compon
 const { width } = Dimensions.get('window');
 
 const CATEGORIES = [
-  { name: 'Pizza', emoji: '🍕', cuisine: 'Italian' },
-  { name: 'Burgers', emoji: '🍔', cuisine: 'American' },
-  { name: 'Sushi', emoji: '🍣', cuisine: 'Japanese' },
-  { name: 'Mexican', emoji: '🌮', cuisine: 'Mexican' },
-  { name: 'Pasta', emoji: '🍝', cuisine: 'Italian' },
-  { name: 'Healthy', emoji: '🥗', cuisine: 'Healthy' },
-  { name: 'Asian', emoji: '🍜', cuisine: 'Chinese' },
-  { name: 'Desserts', emoji: '🍰', cuisine: 'Desserts' },
+  { name: 'Chicken', emoji: '🍗', cuisine: 'Chicken' },
+  { name: 'Mexican', emoji: '🌮', cuisine: 'Mexican Chicken' },
+  { name: 'Grill', emoji: '🔥', cuisine: 'Grill & BBQ' },
+  { name: 'Shawarma', emoji: '🌯', cuisine: 'Shawarma & Grill' },
+  { name: 'Curry', emoji: '🍛', cuisine: 'Indian & Curry' },
+  { name: 'Flowers', emoji: '💐', cuisine: 'Florist' },
+  { name: 'Laundry', emoji: '👔', cuisine: 'Laundry' },
+  { name: 'Parcels', emoji: '📦', cuisine: 'Parcel Delivery' },
+];
+
+const SERVICE_TABS = [
+  { key: 'all', label: 'All', emoji: '🏠' },
+  { key: 'food', label: 'Food', emoji: '🍔' },
+  { key: 'laundry', label: 'Laundry', emoji: '👔' },
+  { key: 'parcel', label: 'Parcels', emoji: '📦' },
+  { key: 'florist', label: 'Flowers', emoji: '💐' },
 ];
 
 const getGreeting = () => {
@@ -48,6 +56,7 @@ export default function HomeScreen() {
   const [allRestaurants, setAllRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeService, setActiveService] = useState('all');
 
   const loadData = async () => {
     try {
@@ -120,6 +129,25 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </Animated.View>
 
+        {/* Service Tabs */}
+        <Animated.View entering={FadeIn.delay(180).duration(300)}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.serviceTabs}>
+            {SERVICE_TABS.map((tab) => (
+              <TouchableOpacity
+                key={tab.key}
+                testID={`service-tab-${tab.key}`}
+                style={[styles.serviceTab, activeService === tab.key && styles.serviceTabActive]}
+                onPress={() => setActiveService(tab.key)}
+              >
+                <Text style={styles.serviceEmoji}>{tab.emoji}</Text>
+                <Text style={[styles.serviceLabel, activeService === tab.key && styles.serviceLabelActive]}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </Animated.View>
+
         {/* Promo Banner - slide in from left */}
         <Animated.View entering={SlideInLeft.delay(200).duration(500).springify()}>
           <View style={styles.promoBanner}>
@@ -179,12 +207,16 @@ export default function HomeScreen() {
         {/* Featured Restaurants - stagger cards */}
         <View style={styles.section}>
           <Animated.View entering={FadeIn.delay(400).duration(300)} style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Featured Restaurants</Text>
+            <Text style={styles.sectionTitle}>
+              {activeService === 'all' ? 'Featured' : SERVICE_TABS.find(t => t.key === activeService)?.label}
+            </Text>
             <TouchableOpacity onPress={() => router.push('/(tabs)/search')}>
               <Text style={styles.seeAll}>See all</Text>
             </TouchableOpacity>
           </Animated.View>
-          {featuredRestaurants.map((restaurant, index) => (
+          {featuredRestaurants
+            .filter(r => activeService === 'all' || r.service_type === activeService)
+            .map((restaurant, index) => (
             <StaggerItem key={restaurant.restaurant_id} index={index} delay={120}>
               <TouchableOpacity
                 testID={`restaurant-${restaurant.restaurant_id}`}
@@ -224,7 +256,9 @@ export default function HomeScreen() {
           <Animated.View entering={FadeIn.delay(600).duration(300)}>
             <Text style={styles.sectionTitle}>All Restaurants</Text>
           </Animated.View>
-          {allRestaurants.filter(r => !r.featured).slice(0, 8).map((restaurant, index) => (
+          {allRestaurants
+            .filter(r => activeService === 'all' || r.service_type === activeService)
+            .filter(r => !r.featured).slice(0, 8).map((restaurant, index) => (
             <StaggerItem key={restaurant.restaurant_id} index={index} delay={80}>
               <TouchableOpacity
                 style={styles.listCard}
@@ -271,6 +305,12 @@ const styles = StyleSheet.create({
   searchBar: { flexDirection: 'row', alignItems: 'center', marginHorizontal: Spacing.xl, marginVertical: Spacing.md, paddingLeft: Spacing.md, paddingRight: Spacing.xs, paddingVertical: Spacing.xs, backgroundColor: Colors.paleGray, borderRadius: BorderRadius.lg, height: 52 },
   searchPlaceholder: { flex: 1, ...Typography.body, color: Colors.gray, marginLeft: Spacing.sm },
   filterButton: { width: 40, height: 40, borderRadius: BorderRadius.md, backgroundColor: Colors.sage, justifyContent: 'center', alignItems: 'center' },
+  serviceTabs: { paddingLeft: Spacing.xl, marginBottom: Spacing.md },
+  serviceTab: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderRadius: BorderRadius.full, backgroundColor: Colors.paleGray, marginRight: Spacing.sm, gap: 6 },
+  serviceTabActive: { backgroundColor: Colors.sage },
+  serviceEmoji: { fontSize: 18 },
+  serviceLabel: { ...Typography.bodySmall, color: Colors.textSecondary, fontWeight: '600' },
+  serviceLabelActive: { color: Colors.white },
   promoBanner: { marginHorizontal: Spacing.xl, marginBottom: Spacing.lg, backgroundColor: '#2E8B57', borderRadius: BorderRadius.xl, padding: Spacing.lg, overflow: 'hidden', minHeight: 160 },
   promoContent: { flex: 1, zIndex: 1 },
   promoLabel: { ...Typography.caption, color: 'rgba(255,255,255,0.8)', fontWeight: '600', letterSpacing: 1, marginBottom: Spacing.xs },
