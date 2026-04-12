@@ -1,16 +1,37 @@
 import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '../store/authStore';
 import { Colors } from '../constants/Colors';
 
+function useProtectedRoute() {
+  const { isAuthenticated, isLoading } = useAuthStore();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === 'auth';
+    const inOnboarding = segments[0] === 'onboarding';
+    const isRoot = segments.length === 0 || segments[0] === 'index';
+
+    if (isAuthenticated && (inAuthGroup || inOnboarding || isRoot)) {
+      // User is logged in but on auth/onboarding/splash - redirect to home
+      router.replace('/(tabs)/home' as any);
+    }
+  }, [isAuthenticated, isLoading, segments]);
+}
+
 export default function RootLayout() {
   const loadUser = useAuthStore(state => state.loadUser);
-  
+
   useEffect(() => {
     loadUser();
   }, []);
-  
+
+  useProtectedRoute();
+
   return (
     <>
       <StatusBar style="dark" />

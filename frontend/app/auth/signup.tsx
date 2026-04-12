@@ -41,9 +41,7 @@ export default function SignupScreen() {
     try {
       const data = await api.signup(email.trim(), password, name.trim(), phone.trim() || undefined);
       await login(data.user, data.session_token);
-      requestAnimationFrame(() => {
-        router.replace('/home' as any);
-      });
+      // Navigation is handled by useProtectedRoute in _layout.tsx
     } catch (error: any) {
       Alert.alert('Signup Failed', error.message || 'Could not create account');
       setLoading(false);
