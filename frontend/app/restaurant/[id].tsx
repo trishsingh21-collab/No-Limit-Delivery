@@ -157,7 +157,7 @@ export default function RestaurantDetailScreen() {
             </View>
             <View style={styles.metaItem}>
               <Ionicons name="bicycle-outline" size={16} color={Colors.gray} />
-              <Text style={styles.metaValue}>$2.99</Text>
+              <Text style={styles.metaValue}>R25</Text>
             </View>
           </View>
 
@@ -235,35 +235,31 @@ export default function RestaurantDetailScreen() {
                 {items.map((item, idx) => (
                   <StaggerItem key={item.item_id} index={idx} delay={60}>
                     <View style={styles.menuItem}>
-                    <View style={styles.menuItemInfo}>
-                      <Text testID={`menu-item-${item.item_id}`} style={styles.menuItemName}>
-                        {item.name}
-                      </Text>
-                      <Text style={styles.menuItemDescription} numberOfLines={2}>
-                        {item.description}
-                      </Text>
-                      <View style={styles.menuItemPriceRow}>
-                        <Text style={styles.menuItemPrice}>${item.price.toFixed(2)}</Text>
-                        <View style={styles.calorieBadge}>
-                          <Text style={styles.calorieText}>
-                            {Math.round(item.price * 22)} cal
-                          </Text>
+                      <View style={styles.menuItemInfo}>
+                        <Text testID={`menu-item-${item.item_id}`} style={styles.menuItemName}>
+                          {item.name}
+                        </Text>
+                        <Text style={styles.menuItemDescription} numberOfLines={2}>
+                          {item.description}
+                        </Text>
+                        <View style={styles.menuItemPriceRow}>
+                          <Text style={styles.menuItemPrice}>R{item.price.toFixed(2)}</Text>
                         </View>
                       </View>
-                    </View>
-                    <View style={styles.menuItemRight}>
-                      <Image
-                        source={{ uri: item.image }}
-                        style={styles.menuItemImage}
-                        resizeMode="cover"
-                      />
-                      <TouchableOpacity
-                        testID={`add-to-cart-${item.item_id}`}
-                        style={styles.addButton}
-                        onPress={() => handleAddToCart(item)}
-                      >
-                        <Ionicons name="add" size={20} color={Colors.white} />
-                      </TouchableOpacity>
+                      <View style={styles.menuItemRight}>
+                        <Image
+                          source={{ uri: item.image }}
+                          style={styles.menuItemImage}
+                          resizeMode="cover"
+                        />
+                        <TouchableOpacity
+                          testID={`add-to-cart-${item.item_id}`}
+                          style={styles.addButton}
+                          onPress={() => handleAddToCart(item)}
+                        >
+                          <Ionicons name="add" size={20} color={Colors.white} />
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </StaggerItem>
                 ))}

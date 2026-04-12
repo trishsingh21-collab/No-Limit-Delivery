@@ -33,8 +33,8 @@ export default function CheckoutScreen() {
   const [loading, setLoading] = useState(false);
 
   const subtotal = getTotal();
-  const deliveryFee = 3.99;
-  const tax = subtotal * 0.08;
+  const deliveryFee = 25.00;
+  const tax = subtotal * 0.15;
   const total = subtotal + deliveryFee + tax;
 
   const handlePlaceOrder = async () => {
@@ -203,22 +203,22 @@ export default function CheckoutScreen() {
 
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Subtotal</Text>
-                <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>R{subtotal.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Delivery Fee</Text>
-                <Text style={styles.summaryValue}>${deliveryFee.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>R{deliveryFee.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Tax</Text>
-                <Text style={styles.summaryValue}>${tax.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>R{tax.toFixed(2)}</Text>
               </View>
 
               <View style={[styles.divider, { marginTop: Spacing.sm }]} />
 
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Total</Text>
-                <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
+                <Text style={styles.totalValue}>R{total.toFixed(2)}</Text>
               </View>
             </View>
           </View>
@@ -238,7 +238,7 @@ export default function CheckoutScreen() {
               <ActivityIndicator color={Colors.white} />
             ) : (
               <Text style={styles.placeOrderText}>
-                Place Order  •  ${total.toFixed(2)}
+                Place Order  •  R{total.toFixed(2)}
               </Text>
             )}
           </TouchableOpacity>

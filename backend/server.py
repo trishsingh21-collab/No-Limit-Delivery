@@ -383,13 +383,22 @@ async def logout(
     response.delete_cookie("session_token", path="/")
     return {"message": "Logged out successfully"}
 
+# ==================== SERVICE ENDPOINTS ====================
+
+@api_router.get("/services")
+async def get_services():
+    """Get all available service categories"""
+    services = await db.services.find({"active": True}, {"_id": 0}).to_list(20)
+    return services
+
 # ==================== RESTAURANT ENDPOINTS ====================
 
 @api_router.get("/restaurants")
 async def get_restaurants(
     cuisine: Optional[str] = None,
     featured: Optional[bool] = None,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    service_type: Optional[str] = None
 ):
     """Get list of restaurants with optional filters"""
     query = {"active": True}
@@ -398,6 +407,8 @@ async def get_restaurants(
         query["cuisine_type"] = cuisine
     if featured is not None:
         query["featured"] = featured
+    if service_type:
+        query["service_type"] = service_type
     if search:
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},
@@ -453,8 +464,8 @@ async def create_order(
     
     # Calculate totals
     subtotal = sum(item.price * item.quantity for item in data.items)
-    tax = subtotal * 0.08  # 8% tax
-    total = subtotal + 3.99 + tax  # subtotal + delivery_fee + tax
+    tax = subtotal * 0.15  # 15% VAT (South Africa)
+    total = subtotal + 25.00 + tax  # subtotal + delivery_fee + tax
     
     # Create order
     order = Order(

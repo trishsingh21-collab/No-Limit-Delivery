@@ -211,7 +211,7 @@ export default function HomeScreen() {
                     <Ionicons name="time-outline" size={14} color={Colors.gray} />
                     <Text style={styles.metaText}>{restaurant.delivery_time}</Text>
                     <Ionicons name="bicycle-outline" size={14} color={Colors.gray} style={{ marginLeft: Spacing.md }} />
-                    <Text style={styles.metaText}>$2.99</Text>
+                    <Text style={styles.metaText}>R25</Text>
                   </View>
                 </View>
               </TouchableOpacity>

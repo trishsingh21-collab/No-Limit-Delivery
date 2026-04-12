@@ -257,7 +257,7 @@ export default function OrderTrackingScreen() {
 
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>${order.total?.toFixed(2)}</Text>
+              <Text style={styles.totalValue}>R{order.total?.toFixed(2)}</Text>
             </View>
           </View>
 

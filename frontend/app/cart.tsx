@@ -21,8 +21,8 @@ export default function CartScreen() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   
   const subtotal = getTotal();
-  const deliveryFee = 3.99;
-  const tax = subtotal * 0.08;
+  const deliveryFee = 25.00;
+  const tax = subtotal * 0.15;
   const total = subtotal + deliveryFee + tax;
   
   const handleCheckout = () => {
@@ -118,19 +118,19 @@ export default function CartScreen() {
         <View style={styles.summary}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>R{subtotal.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Delivery Fee</Text>
-            <Text style={styles.summaryValue}>${deliveryFee.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>R{deliveryFee.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Tax</Text>
-            <Text style={styles.summaryValue}>${tax.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>R{tax.toFixed(2)}</Text>
           </View>
           <View style={[styles.summaryRow, styles.totalRow]}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
+            <Text style={styles.totalValue}>R{total.toFixed(2)}</Text>
           </View>
         </View>
       </ScrollView>
@@ -141,7 +141,7 @@ export default function CartScreen() {
           onPress={handleCheckout}
         >
           <Text style={styles.checkoutButtonText}>
-            Proceed to Checkout  •  ${total.toFixed(2)}
+            Proceed to Checkout  •  R{total.toFixed(2)}
           </Text>
         </TouchableOpacity>
       </View>
