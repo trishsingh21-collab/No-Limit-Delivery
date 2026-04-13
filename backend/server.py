@@ -107,6 +107,10 @@ class Order(BaseModel):
     total: float
     delivery_address: Dict[str, Any]
     payment_method: str = "card"
+    order_notes: str = ""
+    allergies: List[str] = []
+    tip: float = 0
+    promo_code: Optional[str] = None
     status: str = "pending"  # pending, confirmed, preparing, ready, picked_up, delivered, cancelled
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -116,6 +120,11 @@ class CreateOrder(BaseModel):
     restaurant_id: str
     items: List[OrderItem]
     delivery_address: Dict[str, Any]
+    payment_method: str = "card"
+    order_notes: str = ""
+    allergies: List[str] = []
+    tip: float = 0
+    promo_code: Optional[str] = None
 
 class Review(BaseModel):
     review_id: str = Field(default_factory=lambda: f"review_{uuid.uuid4().hex[:12]}")
@@ -477,8 +486,13 @@ async def create_order(
         subtotal=round(subtotal, 2),
         delivery_fee=round(delivery_fee, 2),
         tax=round(tax, 2),
-        total=round(total, 2),
+        total=round(total + data.tip, 2),
         delivery_address=data.delivery_address,
+        payment_method=data.payment_method,
+        order_notes=data.order_notes,
+        allergies=data.allergies,
+        tip=data.tip,
+        promo_code=data.promo_code,
         estimated_delivery=datetime.now(timezone.utc) + timedelta(minutes=40)
     )
     
