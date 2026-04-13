@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '../store/authStore';
 import { Colors, Spacing } from '../constants/Colors';
 
-const ICON_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/fbc42bd4fce64eda9d87b3c2088d37d8aa9637f56451d288c0e41be214db92c6.png';
+const ICON_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/47aab7b6590a09b1f0856621efe0291e4d9a0f2ec42ccc4cc7c9b6374114ba67.png';
 const LOGO_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/ef138190ead02ebe8a98101f1b1ce17d392af0f16a2c371c56604c3d9f3cf927.png';
 
 export default function SplashScreen() {
@@ -19,7 +19,7 @@ export default function SplashScreen() {
       } else {
         router.replace('/onboarding');
       }
-    }, 3000);
+    }, 7000);
     return () => clearTimeout(timer);
   }, [isAuthenticated, isLoading]);
 
