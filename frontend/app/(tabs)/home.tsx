@@ -30,6 +30,7 @@ const CATEGORIES = [
   { name: 'Curry', emoji: '🍛', cuisine: 'Indian & Curry' },
   { name: 'Café', emoji: '☕', cuisine: 'Café & Coffee' },
   { name: 'Meals', emoji: '🍱', cuisine: 'Home-Style Meals' },
+  { name: 'Take-Away', emoji: '🍟', cuisine: 'Take-Away' },
   { name: 'Flowers', emoji: '💐', cuisine: 'Florist' },
 ];
 
