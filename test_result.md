@@ -188,13 +188,112 @@ test_plan:
     - "Services API returns 5 service types"
     - "POST /api/orders accepts new fields"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
+
+frontend:
+  - task: "Splash Screen with 12s duration and tagline"
+    implemented: true
+    working: true
+    file: "app/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "VERIFIED: Splash screen displays for 12+ seconds with 'Your local everything, delivered' tagline and animated loading dots. Fade animation working correctly. Screenshots captured showing proper mobile layout (390x844)."
+
+  - task: "Onboarding with 3 slides and Skip functionality"
+    implemented: true
+    working: true
+    file: "app/onboarding.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "VERIFIED: Onboarding shows 'Everything You Need', 'Local & Convenient', 'Track in Real-Time' slides. Skip button works correctly and navigates to login screen. Mobile responsive design confirmed."
+
+  - task: "Login with test credentials"
+    implemented: true
+    working: false
+    file: "app/auth/login.tsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "ISSUE: Login form accepts test@demo.com/test123 credentials but login appears to fail - user remains on login screen instead of navigating to home screen. Login UI is properly implemented with email/password fields and Sign In button."
+
+  - task: "Home Screen with All tab showing 13 providers"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/home.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "NOT TESTED: Could not reach home screen due to login failure. Home screen code appears properly implemented with service tabs (All, Food, Laundry, Parcels, Flowers, Pharmacy) and restaurant cards with data-testid attributes."
+
+  - task: "Restaurant Menu with images visible"
+    implemented: true
+    working: "NA"
+    file: "app/restaurant/[id].tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "NOT TESTED: Could not reach restaurant menu due to login failure. Restaurant detail page code shows proper menu item display with images, add-to-cart buttons, and mobile-responsive layout."
+
+  - task: "Add to Cart and Checkout flow"
+    implemented: true
+    working: "NA"
+    file: "app/cart.tsx, app/checkout.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "NOT TESTED: Could not test cart/checkout flow due to login failure. Checkout code shows all required features: estimated delivery time, Select on Map button, Notes & Allergies section, payment methods (Card/Apple Pay/Cash/EFT), tip buttons, promo code field, order summary."
+
+  - task: "Payment Methods with EFT bank details"
+    implemented: true
+    working: "NA"
+    file: "app/checkout.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "NOT TESTED: Could not test payment selection due to login failure. Code shows all 4 payment methods implemented with EFT bank details (FNB account info) displaying when EFT is selected."
+
+  - task: "Map functionality in checkout"
+    implemented: true
+    working: "NA"
+    file: "components/MapPicker.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "NOT TESTED: Could not test map functionality due to login failure. MapPicker component properly implemented with Leaflet map, location selection, and address display."
 
 agent_communication:
     - agent: "main"
-      message: "Major update completed. Changes: 1) Splash tagline updated to multi-service messaging, 2) Onboarding slides updated for local multi-service app, 3) All providers now show under All tab, 4) Checkout rebuilt with: payment methods (Card/Apple Pay/Cash/EFT), notes & allergies section, tip driver, promo code, estimated delivery time, 5) Parcel images updated. Please test: a) GET /api/restaurants returns 13 restaurants, b) POST /api/orders accepts payment_method, order_notes, allergies, tip fields. Test credentials: test@demo.com / test123"
+      message: "All changes done: 1) Splash screen now 12s with fade animation + 'Your local everything, delivered' tagline + loading dots, 2) Fixed 44 broken image URLs - all 241 unique URLs now verified working, 3) All providers show under All tab, 4) Checkout with Card/Apple Pay/Cash/EFT, notes/allergies, tip, promo code, 5) Onboarding updated for multi-service. Please do FRONTEND testing. Test credentials: test@demo.com / test123. URL: http://localhost:3000"
     - agent: "testing"
       message: "COMPREHENSIVE TESTING COMPLETE ✅ All backend API requirements verified successfully: 1) GET /api/restaurants returns exactly 13 restaurants with all expected names, 2) Removed restaurants (Mr T's Durban Curries, The Grill House) confirmed absent, 3) Café Estreito correctly renamed to CAFE E, 4) Jazbar has 19 menu items across required categories (Curries, Bunny Chows, Weekly Specials), 5) All menu items have unique image URLs, 6) GET /api/services returns 5 service types (food, laundry, parcel, florist, pharmacy). Authentication working with test@demo.com/test123. Backend APIs fully functional."
     - agent: "testing"
       message: "LATEST CHANGES TESTING COMPLETE ✅ All review request requirements verified: 1) GET /api/restaurants returns exactly 13 restaurants - ALL appear correctly, 2) GET /api/services returns 5 services (food, laundry, parcel, florist, pharmacy), 3) Jazbar verified with 19 items in correct categories (Curries, Bunny Chows, Weekly Specials), 4) POST /api/orders accepts new fields (payment_method, order_notes, allergies, tip, promo_code) without errors - tested all payment methods (card, cash, eft, apple_pay), 5) CAFE E exists (renamed from Café Estreito), 6) Mr T's Durban Curries confirmed NOT to exist. API accepts new fields but doesn't return them in response (not yet implemented in Order model). All backend functionality working as expected."
+    - agent: "testing"
+      message: "FRONTEND MOBILE TESTING COMPLETE ✅ Tested No Limit Delivery app in mobile dimensions (390x844). WORKING: 1) Splash screen displays 12+ seconds with tagline 'Your local everything, delivered' and loading dots, 2) Onboarding shows 3 slides with Skip functionality, 3) All UI components properly implemented for mobile. CRITICAL ISSUE: Login with test@demo.com/test123 fails - user remains on login screen instead of navigating to home. This blocks testing of home screen, restaurant menus, cart, checkout, payment methods, and map functionality. All code appears properly implemented but login authentication is not working. Screenshots captured at each stage."
