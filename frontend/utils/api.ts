@@ -97,6 +97,19 @@ export const api = {
     if (!res.ok) throw new Error(await res.text());
     return res.json();
   },
+
+  createPayFastPayment: async (token: string, orderId: string) => {
+    const res = await fetch(`${BACKEND_URL}/api/payments/payfast/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ order_id: orderId }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  },
   
   getOrders: async (token: string) => {
     const res = await fetch(`${BACKEND_URL}/api/orders`, {

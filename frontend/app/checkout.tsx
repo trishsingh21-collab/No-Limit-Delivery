@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,13 +13,12 @@ import { useAuthStore } from '../store/authStore';
 import { api } from '../utils/api';
 import MapPicker from '../components/MapPicker';
 
-type PaymentMethod = 'card' | 'apple_pay' | 'cash' | 'eft';
+type PaymentMethod = 'payfast' | 'cash' | 'eft';
 
 const PAYMENT_METHODS: { key: PaymentMethod; icon: string; title: string; subtitle: string }[] = [
-  { key: 'card', icon: 'card-outline', title: 'Credit / Debit Card', subtitle: 'Visa, Mastercard, Amex' },
-  { key: 'apple_pay', icon: 'logo-apple', title: 'Apple Pay', subtitle: 'Pay with Apple Pay' },
+  { key: 'payfast', icon: 'card-outline', title: 'Pay Online (PayFast)', subtitle: 'Visa, Mastercard, SnapScan, EFT' },
   { key: 'cash', icon: 'cash-outline', title: 'Cash on Delivery', subtitle: 'Pay when your order arrives' },
-  { key: 'eft', icon: 'swap-horizontal-outline', title: 'EFT / Bank Transfer', subtitle: 'Manual bank transfer' },
+  { key: 'eft', icon: 'swap-horizontal-outline', title: 'Manual EFT', subtitle: 'Transfer directly to our bank' },
 ];
 
 const EFT_DETAILS = {
@@ -45,7 +45,7 @@ export default function CheckoutScreen() {
   const [showDeliveryMap, setShowDeliveryMap] = useState(false);
 
   // Payment
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('card');
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('payfast');
 
   // Notes & Allergies
   const [orderNotes, setOrderNotes] = useState('');
@@ -142,6 +142,45 @@ export default function CheckoutScreen() {
       };
 
       const order = await api.createOrder(session_token, orderData);
+
+      // If PayFast selected, redirect to PayFast checkout
+      if (selectedPayment === 'payfast') {
+        try {
+          const pfResponse = await api.createPayFastPayment(session_token, order.order_id);
+          const { payfast_url, payment_data } = pfResponse;
+
+          // Build the PayFast form URL with query params
+          const params = new URLSearchParams();
+          Object.entries(payment_data).forEach(([key, value]) => {
+            params.append(key, String(value));
+          });
+
+          const fullUrl = `${payfast_url}?${params.toString()}`;
+          clearCart();
+
+          // Open PayFast in browser
+          const canOpen = await Linking.canOpenURL(fullUrl);
+          if (canOpen) {
+            await Linking.openURL(fullUrl);
+          } else {
+            Alert.alert(
+              'Payment',
+              'Opening PayFast checkout...',
+              [{ text: 'OK', onPress: () => Linking.openURL(fullUrl) }]
+            );
+          }
+        } catch (pfError: any) {
+          // PayFast failed but order was created - fallback to tracking
+          Alert.alert(
+            'Payment Issue',
+            'Order created but payment redirect failed. You can pay from your order history.',
+            [{ text: 'OK', onPress: () => router.replace(`/order-tracking/${order.order_id}` as any) }]
+          );
+        }
+        return;
+      }
+
+      // Cash or EFT - go directly to tracking
       clearCart();
       if (selectedPayment === 'eft') {
         Alert.alert(
@@ -532,14 +571,12 @@ export default function CheckoutScreen() {
               <View style={styles.placeOrderContent}>
                 <Ionicons name={
                   selectedPayment === 'cash' ? 'cash-outline' :
-                  selectedPayment === 'apple_pay' ? 'logo-apple' :
                   selectedPayment === 'eft' ? 'swap-horizontal-outline' : 'card-outline'
                 } size={20} color={Colors.white} />
                 <Text style={styles.placeOrderText}>
                   {selectedPayment === 'cash' ? 'Place Order (Cash)' :
                    selectedPayment === 'eft' ? 'Place Order (EFT)' :
-                   selectedPayment === 'apple_pay' ? 'Pay with Apple Pay' :
-                   'Place Order'}
+                   'Pay with PayFast'}
                 </Text>
                 <Text style={styles.placeOrderPrice}>R{total.toFixed(2)}</Text>
               </View>

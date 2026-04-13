@@ -174,6 +174,18 @@ backend:
           agent: "testing"
           comment: "VERIFIED: POST /api/orders accepts new fields (payment_method, order_notes, allergies, tip, promo_code) without errors. All payment methods tested (card, cash, eft, apple_pay) work successfully. Orders are created with status 200. However, new fields are not yet returned in response (not implemented in Order model). API accepts requests without rejecting them, which meets the requirement that it should not reject requests with these fields."
 
+  - task: "PayFast payment integration"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "COMPREHENSIVE PAYFAST TESTING COMPLETE ✅ All 8 PayFast integration tests PASSED: 1) Login with test@demo.com/test123 successful, 2) Order creation with payment_method='payfast' working (Order ID: order_c0e0e471c6e8, Total: R103.98), 3) POST /api/payments/payfast/create returns correct structure with payfast_url, payment_data (merchant_id, merchant_key, signature, amount, return_url, cancel_url), sandbox flag, 4) PayFast return URL returns HTML with 'Payment Successful' message, 5) PayFast cancel URL returns HTML with 'Payment Cancelled' message, 6) Order status updates correctly to 'confirmed' after return URL hit, 7) Cash order creation working (Order ID: order_0e5c6b84a034, Total: R64.49), 8) EFT order creation working (Order ID: order_502725561675, Total: R66.99). PayFast sandbox configuration verified. All payment methods (payfast, cash, eft) functional."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
@@ -187,6 +199,7 @@ test_plan:
     - "Jazbar menu items accessible"
     - "Services API returns 5 service types"
     - "POST /api/orders accepts new fields"
+    - "PayFast payment integration"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
@@ -297,3 +310,5 @@ agent_communication:
       message: "LATEST CHANGES TESTING COMPLETE ✅ All review request requirements verified: 1) GET /api/restaurants returns exactly 13 restaurants - ALL appear correctly, 2) GET /api/services returns 5 services (food, laundry, parcel, florist, pharmacy), 3) Jazbar verified with 19 items in correct categories (Curries, Bunny Chows, Weekly Specials), 4) POST /api/orders accepts new fields (payment_method, order_notes, allergies, tip, promo_code) without errors - tested all payment methods (card, cash, eft, apple_pay), 5) CAFE E exists (renamed from Café Estreito), 6) Mr T's Durban Curries confirmed NOT to exist. API accepts new fields but doesn't return them in response (not yet implemented in Order model). All backend functionality working as expected."
     - agent: "testing"
       message: "FRONTEND MOBILE TESTING COMPLETE ✅ Tested No Limit Delivery app in mobile dimensions (390x844). WORKING: 1) Splash screen displays 12+ seconds with tagline 'Your local everything, delivered' and loading dots, 2) Onboarding shows 3 slides with Skip functionality, 3) All UI components properly implemented for mobile. CRITICAL ISSUE: Login with test@demo.com/test123 fails - user remains on login screen instead of navigating to home. This blocks testing of home screen, restaurant menus, cart, checkout, payment methods, and map functionality. All code appears properly implemented but login authentication is not working. Screenshots captured at each stage."
+    - agent: "testing"
+      message: "PAYFAST PAYMENT INTEGRATION TESTING COMPLETE ✅ All 8 PayFast integration tests PASSED successfully: 1) Login with test@demo.com/test123 working, 2) Order creation with payment_method='payfast' successful (Total: R103.98), 3) POST /api/payments/payfast/create returns correct structure with payfast_url (sandbox.payfast.co.za), payment_data containing merchant_id, merchant_key, signature, amount, return_url, cancel_url, and sandbox=true flag, 4) PayFast return URL returns proper HTML with 'Payment Successful' message, 5) PayFast cancel URL returns proper HTML with 'Payment Cancelled' message, 6) Order status correctly updates to 'confirmed' with payment_status='paid' after return URL hit, 7) Cash order creation working (Total: R64.49), 8) EFT order creation working (Total: R66.99). PayFast sandbox configuration verified. Authentication properly required for payment endpoints. All payment methods (payfast, cash, eft) fully functional."

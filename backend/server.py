@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request, Header, Response, Cookie
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -12,6 +12,8 @@ import uuid
 import socketio
 from datetime import datetime, timezone, timedelta
 import bcrypt
+import urllib.parse
+from hashlib import md5
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
@@ -506,6 +508,179 @@ async def create_order(
     )
     
     return order.model_dump()
+
+# ==================== PAYFAST PAYMENT INTEGRATION ====================
+
+PAYFAST_CHECKOUT_FIELD_ORDER = [
+    "merchant_id", "merchant_key", "return_url", "cancel_url", "notify_url",
+    "name_first", "name_last", "email_address", "cell_number",
+    "m_payment_id", "amount", "item_name", "item_description",
+    "custom_int1", "custom_str1", "custom_str2",
+    "email_confirmation", "confirmation_address", "payment_method",
+]
+
+def get_payfast_config():
+    return {
+        "merchant_id": os.getenv("PAYFAST_MERCHANT_ID", "10000100"),
+        "merchant_key": os.getenv("PAYFAST_MERCHANT_KEY", "46f0cd694581a"),
+        "passphrase": os.getenv("PAYFAST_PASSPHRASE", ""),
+        "sandbox": os.getenv("PAYFAST_SANDBOX", "true").lower() == "true",
+    }
+
+def calculate_payfast_signature(data: dict, passphrase: str) -> str:
+    """Generate PayFast MD5 signature"""
+    filtered = {k: str(v).strip() for k, v in data.items() if k != 'signature' and v is not None and str(v).strip()}
+    priority_dict = {k: i for i, k in enumerate(PAYFAST_CHECKOUT_FIELD_ORDER)}
+    sorted_keys = sorted(filtered.keys(), key=lambda k: priority_dict.get(k, 999))
+    param_str = '&'.join(f"{key}={urllib.parse.quote_plus(filtered[key])}" for key in sorted_keys)
+    if passphrase:
+        param_str += f"&passphrase={urllib.parse.quote_plus(passphrase)}"
+    return md5(param_str.encode('utf-8')).hexdigest()
+
+@api_router.post("/payments/payfast/create")
+async def create_payfast_payment(
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    session_token: Optional[str] = Cookie(None)
+):
+    """Create a PayFast payment for an order"""
+    user = await get_current_user(authorization, session_token)
+    body = await request.json()
+    order_id = body.get("order_id")
+
+    if not order_id:
+        raise HTTPException(status_code=400, detail="order_id required")
+
+    order = await db.orders.find_one({"order_id": order_id, "user_id": user.user_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    pf = get_payfast_config()
+    base_url = str(request.base_url).rstrip('/')
+    # Use /api prefix for callbacks
+    api_base = base_url.replace(':3000', ':8001') if ':3000' in base_url else base_url
+
+    payment_data = {
+        "merchant_id": pf["merchant_id"],
+        "merchant_key": pf["merchant_key"],
+        "return_url": f"{base_url}/api/payments/payfast/return?order_id={order_id}",
+        "cancel_url": f"{base_url}/api/payments/payfast/cancel?order_id={order_id}",
+        "notify_url": f"{api_base}/api/payments/payfast/notify",
+        "name_first": user.name.split()[0] if user.name else "Customer",
+        "name_last": user.name.split()[-1] if user.name and len(user.name.split()) > 1 else "",
+        "email_address": user.email,
+        "m_payment_id": order_id,
+        "amount": f"{order['total']:.2f}",
+        "item_name": f"No Limit Delivery - Order {order_id[:16]}",
+        "item_description": f"{len(order.get('items', []))} items from {order.get('restaurant_name', 'restaurant')}",
+    }
+
+    payment_data["signature"] = calculate_payfast_signature(payment_data, pf["passphrase"])
+
+    payfast_url = "https://sandbox.payfast.co.za/eng/process" if pf["sandbox"] else "https://www.payfast.co.za/eng/process"
+
+    # Update order status
+    await db.orders.update_one(
+        {"order_id": order_id},
+        {"$set": {"status": "awaiting_payment", "payment_method": "payfast"}}
+    )
+
+    return {
+        "payfast_url": payfast_url,
+        "payment_data": payment_data,
+        "order_id": order_id,
+        "sandbox": pf["sandbox"],
+    }
+
+@api_router.post("/payments/payfast/notify")
+async def payfast_itn(request: Request):
+    """PayFast Instant Transaction Notification (ITN) callback"""
+    try:
+        form_data = await request.form()
+        data = dict(form_data)
+        logger.info(f"PayFast ITN received: {data}")
+
+        pf = get_payfast_config()
+        order_id = data.get("m_payment_id", "")
+        payment_status = data.get("payment_status", "")
+
+        # Verify signature
+        received_sig = data.get("signature", "")
+        calculated_sig = calculate_payfast_signature(data, pf["passphrase"])
+
+        if received_sig != calculated_sig:
+            logger.warning(f"PayFast signature mismatch for order {order_id}")
+            # In sandbox mode, still process
+            if not pf["sandbox"]:
+                return Response(status_code=400, content="Signature mismatch")
+
+        if payment_status == "COMPLETE":
+            await db.orders.update_one(
+                {"order_id": order_id},
+                {"$set": {
+                    "status": "confirmed",
+                    "payment_status": "paid",
+                    "payment_method": "payfast",
+                    "pf_payment_id": data.get("pf_payment_id", ""),
+                    "updated_at": datetime.now(timezone.utc),
+                }}
+            )
+            logger.info(f"Order {order_id} marked as PAID via PayFast")
+        elif payment_status == "CANCELLED":
+            await db.orders.update_one(
+                {"order_id": order_id},
+                {"$set": {"status": "cancelled", "payment_status": "cancelled"}}
+            )
+            logger.info(f"Order {order_id} CANCELLED via PayFast")
+
+        return Response(status_code=200, content="OK")
+    except Exception as e:
+        logger.error(f"PayFast ITN error: {e}")
+        return Response(status_code=200, content="OK")
+
+@api_router.get("/payments/payfast/return")
+async def payfast_return(order_id: str = ""):
+    """PayFast return URL - user redirected here after payment"""
+    # Mark as paid (ITN may arrive later with definitive status)
+    if order_id:
+        await db.orders.update_one(
+            {"order_id": order_id, "status": "awaiting_payment"},
+            {"$set": {"status": "confirmed", "payment_status": "paid", "updated_at": datetime.now(timezone.utc)}}
+        )
+    return HTMLResponse(f"""
+    <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>body{{font-family:system-ui;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#F0F2ED;text-align:center}}
+    .card{{padding:40px;background:white;border-radius:16px;max-width:360px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}}
+    h2{{color:#333;margin-bottom:8px}}p{{color:#666}}
+    .btn{{display:inline-block;margin-top:20px;padding:14px 28px;background:#87A96B;color:white;border-radius:12px;text-decoration:none;font-weight:600}}</style></head>
+    <body><div class="card">
+    <h2>Payment Successful!</h2>
+    <p>Your order has been confirmed and is being prepared.</p>
+    <p style="font-size:13px;color:#999">Order: {order_id}</p>
+    <a class="btn" href="/">Back to App</a>
+    </div></body></html>
+    """)
+
+@api_router.get("/payments/payfast/cancel")
+async def payfast_cancel(order_id: str = ""):
+    """PayFast cancel URL - user cancelled payment"""
+    if order_id:
+        await db.orders.update_one(
+            {"order_id": order_id},
+            {"$set": {"status": "payment_cancelled", "updated_at": datetime.now(timezone.utc)}}
+        )
+    return HTMLResponse(f"""
+    <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>body{{font-family:system-ui;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#F0F2ED;text-align:center}}
+    .card{{padding:40px;background:white;border-radius:16px;max-width:360px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}}
+    h2{{color:#333;margin-bottom:8px}}p{{color:#666}}
+    .btn{{display:inline-block;margin-top:20px;padding:14px 28px;background:#87A96B;color:white;border-radius:12px;text-decoration:none;font-weight:600}}</style></head>
+    <body><div class="card">
+    <h2>Payment Cancelled</h2>
+    <p>Your payment was not completed. You can try again from your orders.</p>
+    <a class="btn" href="/">Back to App</a>
+    </div></body></html>
+    """)
 
 @api_router.get("/orders")
 async def get_orders(

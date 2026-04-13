@@ -1,497 +1,575 @@
+#!/usr/bin/env python3
 """
-Backend API Tests for No Limit Delivery - Seed Data Verification
-Tests the specific requirements from the review request:
-1. GET /api/restaurants returns exactly 13 restaurants
-2. Verify specific restaurant names exist and removed ones don't
-3. Verify Jazbar has menu items with specific categories
-4. Check image uniqueness for menu items
-5. GET /api/services returns 5 service types
+PayFast Payment Integration Testing for No Limit Delivery App
+Tests all PayFast payment flows and related functionality
 """
+
 import requests
-import os
-from pathlib import Path
-from dotenv import load_dotenv
+import json
+import time
+import sys
+from typing import Dict, Any, Optional
 
-# Load frontend .env to get EXPO_PUBLIC_BACKEND_URL
-frontend_env = Path(__file__).parent / 'frontend' / '.env'
-load_dotenv(frontend_env)
+# Backend URL from environment
+BACKEND_URL = "https://limitless-eats-1.preview.emergentagent.com/api"
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/')
-if not BASE_URL:
-    raise ValueError("EXPO_PUBLIC_BACKEND_URL not found in environment")
+# Test credentials
+TEST_EMAIL = "test@demo.com"
+TEST_PASSWORD = "test123"
 
-print(f"\n🔗 Testing against: {BASE_URL}")
-
-def test_auth_login():
-    """Test login with test credentials"""
-    print("\n=== Testing Authentication ===")
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "test@demo.com",
-        "password": "test123"
-    })
-    
-    if response.status_code != 200:
-        print(f"❌ Login failed: {response.status_code} - {response.text}")
-        return None
-    
-    data = response.json()
-    print(f"✅ Login successful for test@demo.com")
-    return data.get("session_token")
-
-def test_restaurants_count():
-    """Test GET /api/restaurants returns exactly 13 restaurants"""
-    print("\n=== Testing Restaurant Count ===")
-    response = requests.get(f"{BASE_URL}/api/restaurants")
-    
-    if response.status_code != 200:
-        print(f"❌ Get restaurants failed: {response.status_code} - {response.text}")
-        return False, []
-    
-    data = response.json()
-    restaurant_count = len(data)
-    
-    if restaurant_count == 13:
-        print(f"✅ Found exactly 13 restaurants")
-        return True, data
-    else:
-        print(f"❌ Expected 13 restaurants, got {restaurant_count}")
-        return False, data
-
-def test_restaurant_names(restaurants):
-    """Verify specific restaurant names exist and removed ones don't"""
-    print("\n=== Testing Restaurant Names ===")
-    
-    # Expected restaurants (should exist)
-    expected_names = [
-        "Pedro's Chicken", "Mochachos", "Shawarma Express", "Vriespot Frozen Foods", 
-        "CAFE E", "Kevcor Take-Aways", "#Braai", "Milano's Brunchies", 
-        "Jazbar", "Chantelly's Laundry Services", "No Limit Flowers", 
-        "No Limit Parcels", "Witmed Pharmacy & Clinic"
-    ]
-    
-    # Restaurants that should NOT exist (removed)
-    removed_names = ["Mr T's Durban Curries", "The Grill House"]
-    
-    # Renamed restaurant (should NOT exist)
-    old_name = "Café Estreito"
-    
-    restaurant_names = [r["name"] for r in restaurants]
-    
-    print(f"Found restaurants: {', '.join(restaurant_names)}")
-    
-    # Check expected restaurants exist
-    missing_restaurants = []
-    for name in expected_names:
-        if name in restaurant_names:
-            print(f"✅ Found: {name}")
-        else:
-            print(f"❌ Missing: {name}")
-            missing_restaurants.append(name)
-    
-    # Check removed restaurants don't exist
-    found_removed = []
-    for name in removed_names:
-        if name in restaurant_names:
-            print(f"❌ Should be removed but found: {name}")
-            found_removed.append(name)
-        else:
-            print(f"✅ Correctly removed: {name}")
-    
-    # Check old name doesn't exist
-    if old_name in restaurant_names:
-        print(f"❌ Old name still exists: {old_name}")
-        found_removed.append(old_name)
-    else:
-        print(f"✅ Old name correctly removed: {old_name}")
-    
-    # Check CAFE E exists (renamed from Café Estreito)
-    if "CAFE E" in restaurant_names:
-        print(f"✅ Renamed restaurant exists: CAFE E")
-    else:
-        print(f"❌ Renamed restaurant missing: CAFE E")
-        missing_restaurants.append("CAFE E")
-    
-    success = len(missing_restaurants) == 0 and len(found_removed) == 0
-    return success, missing_restaurants, found_removed
-
-def test_jazbar_menu(restaurants):
-    """Test Jazbar has menu items with categories: Curries, Bunny Chows, Weekly Specials"""
-    print("\n=== Testing Jazbar Menu ===")
-    
-    # Find Jazbar
-    jazbar = None
-    for restaurant in restaurants:
-        if restaurant["name"] == "Jazbar":
-            jazbar = restaurant
-            break
-    
-    if not jazbar:
-        print("❌ Jazbar restaurant not found")
-        return False
-    
-    print(f"✅ Found Jazbar restaurant")
-    
-    # Get Jazbar menu
-    response = requests.get(f"{BASE_URL}/api/restaurants/{jazbar['restaurant_id']}/menu")
-    
-    if response.status_code != 200:
-        print(f"❌ Get Jazbar menu failed: {response.status_code} - {response.text}")
-        return False
-    
-    menu_items = response.json()
-    
-    if not menu_items:
-        print("❌ Jazbar menu is empty")
-        return False
-    
-    print(f"✅ Jazbar has {len(menu_items)} menu items")
-    
-    # Check categories
-    expected_categories = ["Curries", "Bunny Chows", "Weekly Specials"]
-    found_categories = list(set([item["category"] for item in menu_items]))
-    
-    print(f"Found categories: {', '.join(found_categories)}")
-    
-    missing_categories = []
-    for category in expected_categories:
-        if category in found_categories:
-            print(f"✅ Found category: {category}")
-        else:
-            print(f"❌ Missing category: {category}")
-            missing_categories.append(category)
-    
-    # Show sample items from each category
-    for category in found_categories:
-        items_in_category = [item for item in menu_items if item["category"] == category]
-        print(f"  {category}: {len(items_in_category)} items")
-        if items_in_category:
-            print(f"    Sample: {items_in_category[0]['name']} - R{items_in_category[0]['price']}")
-    
-    success = len(missing_categories) == 0
-    return success
-
-def test_image_uniqueness(restaurants):
-    """Test that menu items have image URLs (not empty/null)"""
-    print("\n=== Testing Image Uniqueness ===")
-    
-    # Test a few restaurants
-    test_restaurants = restaurants[:3]  # Test first 3 restaurants
-    
-    all_images_valid = True
-    
-    for restaurant in test_restaurants:
-        print(f"\nTesting images for: {restaurant['name']}")
+class PayFastTester:
+    def __init__(self):
+        self.session_token = None
+        self.user_data = None
+        self.test_order_id = None
+        self.test_results = []
         
-        response = requests.get(f"{BASE_URL}/api/restaurants/{restaurant['restaurant_id']}/menu")
+    def log_test(self, test_name: str, success: bool, details: str = ""):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if details:
+            print(f"   {details}")
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details
+        })
         
-        if response.status_code != 200:
-            print(f"❌ Failed to get menu for {restaurant['name']}")
-            all_images_valid = False
-            continue
+    def make_request(self, method: str, endpoint: str, data: Dict = None, headers: Dict = None) -> requests.Response:
+        """Make HTTP request with proper error handling"""
+        url = f"{BACKEND_URL}{endpoint}"
+        default_headers = {"Content-Type": "application/json"}
         
-        menu_items = response.json()
-        
-        if not menu_items:
-            print(f"⚠️  No menu items for {restaurant['name']}")
-            continue
-        
-        items_with_images = 0
-        items_without_images = 0
-        unique_images = set()
-        
-        for item in menu_items:
-            if item.get("image") and item["image"].strip():
-                items_with_images += 1
-                unique_images.add(item["image"])
+        if headers:
+            default_headers.update(headers)
+            
+        if self.session_token and "Authorization" not in default_headers:
+            default_headers["Authorization"] = f"Bearer {self.session_token}"
+            
+        try:
+            if method.upper() == "GET":
+                response = requests.get(url, headers=default_headers, timeout=30)
+            elif method.upper() == "POST":
+                response = requests.post(url, json=data, headers=default_headers, timeout=30)
+            elif method.upper() == "PATCH":
+                response = requests.patch(url, json=data, headers=default_headers, timeout=30)
             else:
-                items_without_images += 1
-                print(f"  ❌ No image: {item['name']}")
-        
-        print(f"  Items with images: {items_with_images}")
-        print(f"  Items without images: {items_without_images}")
-        print(f"  Unique images: {len(unique_images)}")
-        
-        if items_without_images > 0:
-            all_images_valid = False
-        else:
-            print(f"  ✅ All items have images")
-    
-    return all_images_valid
-
-def test_services_count():
-    """Test GET /api/services returns 5 service types"""
-    print("\n=== Testing Services Count ===")
-    
-    response = requests.get(f"{BASE_URL}/api/services")
-    
-    if response.status_code != 200:
-        print(f"❌ Get services failed: {response.status_code} - {response.text}")
-        return False, []
-    
-    data = response.json()
-    service_count = len(data)
-    
-    expected_types = ["food", "laundry", "parcel", "florist", "pharmacy"]
-    found_types = [service["type"] for service in data]
-    
-    print(f"Found {service_count} services: {', '.join(found_types)}")
-    
-    if service_count == 5:
-        print(f"✅ Found exactly 5 services")
-    else:
-        print(f"❌ Expected 5 services, got {service_count}")
-        return False, data
-    
-    # Check expected service types
-    missing_types = []
-    for service_type in expected_types:
-        if service_type in found_types:
-            print(f"✅ Found service type: {service_type}")
-        else:
-            print(f"❌ Missing service type: {service_type}")
-            missing_types.append(service_type)
-    
-    success = service_count == 5 and len(missing_types) == 0
-    return success, data
-
-def test_create_order_with_new_fields(auth_token, restaurants):
-    """Test POST /api/orders with new fields: payment_method, order_notes, allergies, tip, promo_code"""
-    print("\n=== Testing Create Order with New Fields ===")
-    
-    if not auth_token:
-        print("❌ Cannot test order creation without authentication")
-        return False
-    
-    # Find a restaurant to order from (use Pedro's Chicken)
-    pedros = None
-    for restaurant in restaurants:
-        if restaurant["name"] == "Pedro's Chicken":
-            pedros = restaurant
-            break
-    
-    if not pedros:
-        print("❌ Pedro's Chicken not found for order test")
-        return False
-    
-    # Get menu items for Pedro's
-    response = requests.get(f"{BASE_URL}/api/restaurants/{pedros['restaurant_id']}/menu")
-    if response.status_code != 200:
-        print(f"❌ Failed to get Pedro's menu: {response.status_code}")
-        return False
-    
-    menu_items = response.json()
-    if not menu_items:
-        print("❌ Pedro's menu is empty")
-        return False
-    
-    # Test different payment methods
-    payment_methods = ["card", "cash", "eft", "apple_pay"]
-    all_payment_methods_work = True
-    
-    for payment_method in payment_methods:
-        print(f"\n  Testing payment method: {payment_method}")
-        
-        # Create order with new fields
-        order_data = {
-            "restaurant_id": pedros["restaurant_id"],
-            "items": [
-                {
-                    "item_id": menu_items[0]["item_id"],
-                    "name": menu_items[0]["name"],
-                    "price": menu_items[0]["price"],
-                    "quantity": 1,
-                    "special_instructions": "Extra sauce please"
-                }
-            ],
-            "delivery_address": {
-                "street": "123 Test Street",
-                "city": "Witbank",
-                "postal_code": "1035",
-                "province": "Mpumalanga"
-            },
-            # NEW FIELDS TO TEST
-            "payment_method": payment_method,
-            "order_notes": "No onions please",
-            "allergies": ["Nuts", "Dairy"],
-            "tip": 15,
-            "promo_code": "NOLIMIT40"
-        }
-        
-        headers = {"Authorization": f"Bearer {auth_token}"}
-        response = requests.post(f"{BASE_URL}/api/orders", json=order_data, headers=headers)
-        
-        if response.status_code == 200:
-            order = response.json()
-            print(f"    ✅ {payment_method}: Order created successfully (ID: {order.get('order_id', 'N/A')})")
-            print(f"       Payment Method in response: {order.get('payment_method', 'N/A')}")
-        elif response.status_code == 422:
-            error_detail = response.json()
-            print(f"    ❌ {payment_method}: Validation error - {error_detail}")
-            all_payment_methods_work = False
-        else:
-            print(f"    ❌ {payment_method}: Failed with status {response.status_code}")
-            all_payment_methods_work = False
-    
-    # Test with all new fields using card payment
-    print(f"\n  Testing all new fields together:")
-    order_data = {
-        "restaurant_id": pedros["restaurant_id"],
-        "items": [
-            {
-                "item_id": menu_items[0]["item_id"],
-                "name": menu_items[0]["name"],
-                "price": menu_items[0]["price"],
-                "quantity": 2,
-                "special_instructions": "Extra sauce please"
-            }
-        ],
-        "delivery_address": {
-            "street": "123 Test Street",
-            "city": "Witbank",
-            "postal_code": "1035",
-            "province": "Mpumalanga"
-        },
-        # NEW FIELDS TO TEST
-        "payment_method": "card",
-        "order_notes": "No onions please",
-        "allergies": ["Nuts", "Dairy"],
-        "tip": 15,
-        "promo_code": "NOLIMIT40"
-    }
-    
-    headers = {"Authorization": f"Bearer {auth_token}"}
-    response = requests.post(f"{BASE_URL}/api/orders", json=order_data, headers=headers)
-    
-    if response.status_code == 200:
-        order = response.json()
-        print("    ✅ Order with all new fields created successfully")
-        print(f"       Order ID: {order.get('order_id', 'N/A')}")
-        print(f"       Total: R{order.get('total', 'N/A')}")
-        print(f"       Payment Method: {order.get('payment_method', 'N/A')}")
-        
-        # Check if new fields are returned (implementation status)
-        if "order_notes" in order:
-            print(f"       Order Notes: {order['order_notes']}")
-        else:
-            print("       ⚠️  Order Notes field not returned (not yet implemented)")
-        
-        if "allergies" in order:
-            print(f"       Allergies: {order['allergies']}")
-        else:
-            print("       ⚠️  Allergies field not returned (not yet implemented)")
-        
-        if "tip" in order:
-            print(f"       Tip: R{order['tip']}")
-        else:
-            print("       ⚠️  Tip field not returned (not yet implemented)")
-        
-        if "promo_code" in order:
-            print(f"       Promo Code: {order['promo_code']}")
-        else:
-            print("       ⚠️  Promo Code field not returned (not yet implemented)")
-        
-        return all_payment_methods_work
-    
-    elif response.status_code == 422:
-        # Validation error - check if it's due to new fields
-        error_detail = response.json()
-        print(f"    ❌ Validation error: {error_detail}")
-        
-        # Try without new fields to see if basic order creation works
-        basic_order_data = {
-            "restaurant_id": pedros["restaurant_id"],
-            "items": order_data["items"],
-            "delivery_address": order_data["delivery_address"]
-        }
-        
-        basic_response = requests.post(f"{BASE_URL}/api/orders", json=basic_order_data, headers=headers)
-        if basic_response.status_code == 200:
-            print("    ✅ Basic order creation works - new fields not yet supported")
-            print("       The API rejects requests with new fields (payment_method, order_notes, allergies, tip, promo_code)")
-            return False  # New fields not supported yet
-        else:
-            print(f"    ❌ Basic order creation also failed: {basic_response.status_code}")
+                raise ValueError(f"Unsupported method: {method}")
+                
+            return response
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            raise
+            
+    def test_login(self) -> bool:
+        """Test 1: Login and get session token"""
+        try:
+            response = self.make_request("POST", "/auth/login", {
+                "email": TEST_EMAIL,
+                "password": TEST_PASSWORD
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.session_token = data.get("session_token")
+                self.user_data = data.get("user")
+                
+                if self.session_token and self.user_data:
+                    self.log_test("Login with test credentials", True, 
+                                f"User: {self.user_data.get('name')} ({self.user_data.get('email')})")
+                    return True
+                else:
+                    self.log_test("Login with test credentials", False, "Missing session_token or user data")
+                    return False
+            else:
+                self.log_test("Login with test credentials", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Login with test credentials", False, f"Exception: {str(e)}")
             return False
-    
-    else:
-        print(f"    ❌ Order creation failed: {response.status_code} - {response.text}")
-        return False
-
-def run_all_tests():
-    """Run all backend tests"""
-    print("🚀 Starting No Limit Delivery Backend Tests")
-    print("=" * 60)
-    
-    # Test authentication
-    auth_token = test_auth_login()
-    if not auth_token:
-        print("❌ Authentication failed - cannot continue with authenticated tests")
-    
-    # Test restaurant count
-    restaurants_success, restaurants = test_restaurants_count()
-    
-    if not restaurants_success:
-        print("❌ Restaurant count test failed")
-        return False
-    
-    # Test restaurant names
-    names_success, missing, found_removed = test_restaurant_names(restaurants)
-    
-    # Test Jazbar menu
-    jazbar_success = test_jazbar_menu(restaurants)
-    
-    # Test image uniqueness
-    images_success = test_image_uniqueness(restaurants)
-    
-    # Test services count
-    services_success, services = test_services_count()
-    
-    # Test create order with new fields
-    order_success = test_create_order_with_new_fields(auth_token, restaurants)
-    
-    # Summary
-    print("\n" + "=" * 60)
-    print("📊 TEST SUMMARY")
-    print("=" * 60)
-    
-    tests = [
-        ("Authentication", auth_token is not None),
-        ("Restaurant Count (13)", restaurants_success),
-        ("Restaurant Names", names_success),
-        ("Jazbar Menu Categories", jazbar_success),
-        ("Menu Item Images", images_success),
-        ("Services Count (5)", services_success),
-        ("Create Order with New Fields", order_success)
-    ]
-    
-    passed = 0
-    failed = 0
-    
-    for test_name, success in tests:
-        if success:
-            print(f"✅ {test_name}")
-            passed += 1
+            
+    def test_create_order_payfast(self) -> bool:
+        """Test 2: Create an order with payment_method: 'payfast'"""
+        try:
+            # First get restaurants to create a valid order
+            restaurants_response = self.make_request("GET", "/restaurants")
+            if restaurants_response.status_code != 200:
+                self.log_test("Create order with PayFast", False, "Failed to get restaurants")
+                return False
+                
+            restaurants = restaurants_response.json()
+            if not restaurants:
+                self.log_test("Create order with PayFast", False, "No restaurants available")
+                return False
+                
+            # Get first restaurant and its menu
+            restaurant = restaurants[0]
+            menu_response = self.make_request("GET", f"/restaurants/{restaurant['restaurant_id']}/menu")
+            if menu_response.status_code != 200:
+                self.log_test("Create order with PayFast", False, "Failed to get menu")
+                return False
+                
+            menu_items = menu_response.json()
+            if not menu_items:
+                self.log_test("Create order with PayFast", False, "No menu items available")
+                return False
+                
+            # Create order with PayFast payment method
+            order_data = {
+                "restaurant_id": restaurant["restaurant_id"],
+                "items": [
+                    {
+                        "item_id": menu_items[0]["item_id"],
+                        "name": menu_items[0]["name"],
+                        "price": menu_items[0]["price"],
+                        "quantity": 2,
+                        "special_instructions": "Test order for PayFast"
+                    }
+                ],
+                "delivery_address": {
+                    "street": "123 Test Street",
+                    "city": "Witbank",
+                    "postal_code": "1035",
+                    "lat": -25.8738,
+                    "lng": 29.2321
+                },
+                "payment_method": "payfast",
+                "order_notes": "PayFast payment test order",
+                "allergies": [],
+                "tip": 10.0,
+                "promo_code": None
+            }
+            
+            response = self.make_request("POST", "/orders", order_data)
+            
+            if response.status_code == 200:
+                order = response.json()
+                self.test_order_id = order.get("order_id")
+                
+                if self.test_order_id and order.get("payment_method") == "payfast":
+                    self.log_test("Create order with PayFast", True, 
+                                f"Order ID: {self.test_order_id}, Total: R{order.get('total', 0):.2f}")
+                    return True
+                else:
+                    self.log_test("Create order with PayFast", False, "Missing order_id or incorrect payment_method")
+                    return False
+            else:
+                self.log_test("Create order with PayFast", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Create order with PayFast", False, f"Exception: {str(e)}")
+            return False
+            
+    def test_create_payfast_payment(self) -> bool:
+        """Test 3: Create PayFast payment via POST /api/payments/payfast/create"""
+        if not self.test_order_id:
+            self.log_test("Create PayFast payment", False, "No test order available")
+            return False
+            
+        try:
+            response = self.make_request("POST", "/payments/payfast/create", {
+                "order_id": self.test_order_id
+            })
+            
+            if response.status_code == 200:
+                payment_data = response.json()
+                
+                # Verify required fields
+                required_fields = ["payfast_url", "payment_data", "order_id", "sandbox"]
+                missing_fields = [field for field in required_fields if field not in payment_data]
+                
+                if missing_fields:
+                    self.log_test("Create PayFast payment", False, f"Missing fields: {missing_fields}")
+                    return False
+                    
+                # Verify payment_data structure
+                payment_info = payment_data.get("payment_data", {})
+                required_payment_fields = ["merchant_id", "merchant_key", "signature", "amount", "return_url", "cancel_url"]
+                missing_payment_fields = [field for field in required_payment_fields if field not in payment_info]
+                
+                if missing_payment_fields:
+                    self.log_test("Create PayFast payment", False, f"Missing payment fields: {missing_payment_fields}")
+                    return False
+                    
+                # Verify sandbox flag
+                is_sandbox = payment_data.get("sandbox", False)
+                payfast_url = payment_data.get("payfast_url", "")
+                
+                details = f"URL: {payfast_url}, Sandbox: {is_sandbox}, Amount: R{payment_info.get('amount', 'N/A')}"
+                self.log_test("Create PayFast payment", True, details)
+                return True
+            else:
+                self.log_test("Create PayFast payment", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Create PayFast payment", False, f"Exception: {str(e)}")
+            return False
+            
+    def test_payfast_return_url(self) -> bool:
+        """Test 4: Test PayFast return URL"""
+        if not self.test_order_id:
+            self.log_test("PayFast return URL", False, "No test order available")
+            return False
+            
+        try:
+            # Test return URL without authentication (should work)
+            url = f"{BACKEND_URL}/payments/payfast/return?order_id={self.test_order_id}"
+            response = requests.get(url, timeout=30)
+            
+            if response.status_code == 200:
+                content = response.text
+                
+                # Verify HTML response contains success message
+                if "Payment Successful" in content and "html" in content.lower():
+                    self.log_test("PayFast return URL", True, "Returns HTML with 'Payment Successful' message")
+                    return True
+                else:
+                    self.log_test("PayFast return URL", False, "HTML doesn't contain expected success message")
+                    return False
+            else:
+                self.log_test("PayFast return URL", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("PayFast return URL", False, f"Exception: {str(e)}")
+            return False
+            
+    def test_payfast_cancel_url(self) -> bool:
+        """Test 5: Test PayFast cancel URL"""
+        if not self.test_order_id:
+            self.log_test("PayFast cancel URL", False, "No test order available")
+            return False
+            
+        try:
+            # Test cancel URL without authentication (should work)
+            url = f"{BACKEND_URL}/payments/payfast/cancel?order_id={self.test_order_id}"
+            response = requests.get(url, timeout=30)
+            
+            if response.status_code == 200:
+                content = response.text
+                
+                # Verify HTML response contains cancel message
+                if "Payment Cancelled" in content and "html" in content.lower():
+                    self.log_test("PayFast cancel URL", True, "Returns HTML with 'Payment Cancelled' message")
+                    return True
+                else:
+                    self.log_test("PayFast cancel URL", False, "HTML doesn't contain expected cancel message")
+                    return False
+            else:
+                self.log_test("PayFast cancel URL", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("PayFast cancel URL", False, f"Exception: {str(e)}")
+            return False
+            
+    def test_order_status_update(self) -> bool:
+        """Test 6: Verify order status updates after return URL hit"""
+        try:
+            # Create a fresh order specifically for this test
+            restaurants_response = self.make_request("GET", "/restaurants")
+            if restaurants_response.status_code != 200:
+                self.log_test("Order status update", False, "Failed to get restaurants")
+                return False
+                
+            restaurants = restaurants_response.json()
+            if not restaurants:
+                self.log_test("Order status update", False, "No restaurants available")
+                return False
+                
+            restaurant = restaurants[0]
+            menu_response = self.make_request("GET", f"/restaurants/{restaurant['restaurant_id']}/menu")
+            if menu_response.status_code != 200:
+                self.log_test("Order status update", False, "Failed to get menu")
+                return False
+                
+            menu_items = menu_response.json()
+            if not menu_items:
+                self.log_test("Order status update", False, "No menu items available")
+                return False
+                
+            # Create fresh order for status test
+            order_data = {
+                "restaurant_id": restaurant["restaurant_id"],
+                "items": [
+                    {
+                        "item_id": menu_items[0]["item_id"],
+                        "name": menu_items[0]["name"],
+                        "price": menu_items[0]["price"],
+                        "quantity": 1,
+                        "special_instructions": "Test order for status update"
+                    }
+                ],
+                "delivery_address": {
+                    "street": "999 Status Test Street",
+                    "city": "Witbank",
+                    "postal_code": "1035",
+                    "lat": -25.8738,
+                    "lng": 29.2321
+                },
+                "payment_method": "payfast",
+                "order_notes": "Status update test order",
+                "allergies": [],
+                "tip": 0.0,
+                "promo_code": None
+            }
+            
+            order_response = self.make_request("POST", "/orders", order_data)
+            if order_response.status_code != 200:
+                self.log_test("Order status update", False, "Failed to create test order")
+                return False
+                
+            order = order_response.json()
+            test_order_id = order.get("order_id")
+            
+            if not test_order_id:
+                self.log_test("Order status update", False, "No order ID from created order")
+                return False
+            
+            # Create PayFast payment to set status to "awaiting_payment"
+            payment_response = self.make_request("POST", "/payments/payfast/create", {
+                "order_id": test_order_id
+            })
+            
+            if payment_response.status_code != 200:
+                self.log_test("Order status update", False, "Failed to create PayFast payment")
+                return False
+            
+            # Now hit the return URL to trigger status update
+            return_url = f"{BACKEND_URL}/payments/payfast/return?order_id={test_order_id}"
+            requests.get(return_url, timeout=30)
+            
+            # Wait a moment for the update to process
+            time.sleep(1)
+            
+            # Check order status
+            response = self.make_request("GET", f"/orders/{test_order_id}")
+            
+            if response.status_code == 200:
+                updated_order = response.json()
+                status = updated_order.get("status")
+                payment_status = updated_order.get("payment_status")
+                
+                if status == "confirmed":
+                    self.log_test("Order status update", True, 
+                                f"Order status: {status}, Payment status: {payment_status}")
+                    return True
+                else:
+                    self.log_test("Order status update", False, 
+                                f"Expected 'confirmed', got '{status}'. Payment status: {payment_status}")
+                    return False
+            else:
+                self.log_test("Order status update", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Order status update", False, f"Exception: {str(e)}")
+            return False
+            
+    def test_cash_order(self) -> bool:
+        """Test 7: Test cash order creation"""
+        try:
+            # Get restaurants and menu (reuse logic from payfast test)
+            restaurants_response = self.make_request("GET", "/restaurants")
+            if restaurants_response.status_code != 200:
+                self.log_test("Cash order creation", False, "Failed to get restaurants")
+                return False
+                
+            restaurants = restaurants_response.json()
+            if not restaurants:
+                self.log_test("Cash order creation", False, "No restaurants available")
+                return False
+                
+            restaurant = restaurants[0]
+            menu_response = self.make_request("GET", f"/restaurants/{restaurant['restaurant_id']}/menu")
+            if menu_response.status_code != 200:
+                self.log_test("Cash order creation", False, "Failed to get menu")
+                return False
+                
+            menu_items = menu_response.json()
+            if not menu_items:
+                self.log_test("Cash order creation", False, "No menu items available")
+                return False
+                
+            # Create cash order
+            order_data = {
+                "restaurant_id": restaurant["restaurant_id"],
+                "items": [
+                    {
+                        "item_id": menu_items[0]["item_id"],
+                        "name": menu_items[0]["name"],
+                        "price": menu_items[0]["price"],
+                        "quantity": 1,
+                        "special_instructions": "Test cash order"
+                    }
+                ],
+                "delivery_address": {
+                    "street": "456 Cash Street",
+                    "city": "Witbank",
+                    "postal_code": "1035",
+                    "lat": -25.8738,
+                    "lng": 29.2321
+                },
+                "payment_method": "cash",
+                "order_notes": "Cash payment test order",
+                "allergies": [],
+                "tip": 5.0,
+                "promo_code": None
+            }
+            
+            response = self.make_request("POST", "/orders", order_data)
+            
+            if response.status_code == 200:
+                order = response.json()
+                order_id = order.get("order_id")
+                payment_method = order.get("payment_method")
+                
+                if order_id and payment_method == "cash":
+                    self.log_test("Cash order creation", True, 
+                                f"Order ID: {order_id}, Total: R{order.get('total', 0):.2f}")
+                    return True
+                else:
+                    self.log_test("Cash order creation", False, "Missing order_id or incorrect payment_method")
+                    return False
+            else:
+                self.log_test("Cash order creation", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Cash order creation", False, f"Exception: {str(e)}")
+            return False
+            
+    def test_eft_order(self) -> bool:
+        """Test 8: Test EFT order creation"""
+        try:
+            # Get restaurants and menu (reuse logic)
+            restaurants_response = self.make_request("GET", "/restaurants")
+            if restaurants_response.status_code != 200:
+                self.log_test("EFT order creation", False, "Failed to get restaurants")
+                return False
+                
+            restaurants = restaurants_response.json()
+            if not restaurants:
+                self.log_test("EFT order creation", False, "No restaurants available")
+                return False
+                
+            restaurant = restaurants[0]
+            menu_response = self.make_request("GET", f"/restaurants/{restaurant['restaurant_id']}/menu")
+            if menu_response.status_code != 200:
+                self.log_test("EFT order creation", False, "Failed to get menu")
+                return False
+                
+            menu_items = menu_response.json()
+            if not menu_items:
+                self.log_test("EFT order creation", False, "No menu items available")
+                return False
+                
+            # Create EFT order
+            order_data = {
+                "restaurant_id": restaurant["restaurant_id"],
+                "items": [
+                    {
+                        "item_id": menu_items[0]["item_id"],
+                        "name": menu_items[0]["name"],
+                        "price": menu_items[0]["price"],
+                        "quantity": 1,
+                        "special_instructions": "Test EFT order"
+                    }
+                ],
+                "delivery_address": {
+                    "street": "789 EFT Avenue",
+                    "city": "Witbank",
+                    "postal_code": "1035",
+                    "lat": -25.8738,
+                    "lng": 29.2321
+                },
+                "payment_method": "eft",
+                "order_notes": "EFT payment test order",
+                "allergies": [],
+                "tip": 7.5,
+                "promo_code": None
+            }
+            
+            response = self.make_request("POST", "/orders", order_data)
+            
+            if response.status_code == 200:
+                order = response.json()
+                order_id = order.get("order_id")
+                payment_method = order.get("payment_method")
+                
+                if order_id and payment_method == "eft":
+                    self.log_test("EFT order creation", True, 
+                                f"Order ID: {order_id}, Total: R{order.get('total', 0):.2f}")
+                    return True
+                else:
+                    self.log_test("EFT order creation", False, "Missing order_id or incorrect payment_method")
+                    return False
+            else:
+                self.log_test("EFT order creation", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("EFT order creation", False, f"Exception: {str(e)}")
+            return False
+            
+    def run_all_tests(self):
+        """Run all PayFast integration tests"""
+        print("🚀 Starting PayFast Payment Integration Tests")
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Test Credentials: {TEST_EMAIL} / {TEST_PASSWORD}")
+        print("=" * 60)
+        
+        # Test sequence
+        tests = [
+            self.test_login,
+            self.test_create_order_payfast,
+            self.test_create_payfast_payment,
+            self.test_payfast_return_url,
+            self.test_payfast_cancel_url,
+            self.test_order_status_update,
+            self.test_cash_order,
+            self.test_eft_order
+        ]
+        
+        passed = 0
+        total = len(tests)
+        
+        for test in tests:
+            try:
+                if test():
+                    passed += 1
+            except Exception as e:
+                print(f"❌ FAIL {test.__name__}: Unexpected error: {str(e)}")
+                
+        print("=" * 60)
+        print(f"📊 Test Results: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All PayFast integration tests PASSED!")
+            return True
         else:
-            print(f"❌ {test_name}")
-            failed += 1
+            print("⚠️  Some tests FAILED. Check details above.")
+            return False
+
+def main():
+    """Main test runner"""
+    tester = PayFastTester()
+    success = tester.run_all_tests()
     
-    print(f"\nResults: {passed} passed, {failed} failed")
-    
-    if failed == 0:
-        print("🎉 All tests passed!")
-        return True
-    else:
-        print("⚠️  Some tests failed")
-        
-        # Detailed failure info
-        if not names_success:
-            if missing:
-                print(f"Missing restaurants: {', '.join(missing)}")
-            if found_removed:
-                print(f"Should be removed: {', '.join(found_removed)}")
-        
-        return False
+    # Exit with appropriate code
+    sys.exit(0 if success else 1)
 
 if __name__ == "__main__":
-    success = run_all_tests()
-    exit(0 if success else 1)
+    main()
