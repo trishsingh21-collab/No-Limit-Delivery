@@ -101,3 +101,85 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Update restaurant data in seed_data.py: Remove Mr T's Durban Curries and The Grill House, rename Café Estreito to CAFE E, add Jazbar (Indian Cuisine), and assign unique stock images to all 400+ menu items across 13 providers."
+
+backend:
+  - task: "Seed data correctly with 13 restaurants"
+    implemented: true
+    working: true
+    file: "seed_data.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Rewrote seed_data.py with all 13 providers, 407 items. Removed Mr T's Durban Curries and The Grill House. Renamed Café Estreito to CAFE E. Added Jazbar with full menu. Assigned unique Unsplash stock images per item."
+        - working: true
+          agent: "testing"
+          comment: "VERIFIED: GET /api/restaurants returns exactly 13 restaurants. All expected restaurants found: Pedro's Chicken, Mochachos, Shawarma Express, Vriespot Frozen Foods, CAFE E, Kevcor Take-Aways, #Braai, Milano's Brunchies, Jazbar, Chantelly's Laundry Services, No Limit Flowers, No Limit Parcels, Witmed Pharmacy & Clinic. Removed restaurants confirmed absent: Mr T's Durban Curries, The Grill House. Café Estreito correctly renamed to CAFE E."
+
+  - task: "API returns correct restaurant list"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "GET /api/restaurants returns all 13 providers. GET /api/restaurants/{id}/menu returns unique images per item."
+        - working: true
+          agent: "testing"
+          comment: "VERIFIED: GET /api/restaurants API working correctly. Returns exactly 13 restaurants with all required fields. GET /api/restaurants/{id}/menu returns menu items with unique image URLs. All menu items tested have valid, non-empty image URLs. Authentication with test@demo.com/test123 working."
+
+  - task: "Jazbar menu items accessible"
+    implemented: true
+    working: true
+    file: "seed_data.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Jazbar has 19 items across Curries, Bunny Chows, and Weekly Specials categories"
+        - working: true
+          agent: "testing"
+          comment: "VERIFIED: Jazbar restaurant found with 19 menu items. All required categories present: Curries (4 items), Bunny Chows (8 items), Weekly Specials (7 items). Sample items confirmed: 1/4 Chicken Bunny Chow (R80), Chicken Curry Large (R90), Monday: Beans Curry & Roti (R65). GET /api/restaurants/{jazbar_id}/menu working correctly."
+
+  - task: "Services API returns 5 service types"
+    implemented: true
+    working: true
+    file: "seed_data.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "VERIFIED: GET /api/services returns exactly 5 service types: food, laundry, parcel, florist, pharmacy. All services have correct structure with service_id, name, icon, emoji, type, description, and active fields."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Seed data correctly with 13 restaurants"
+    - "API returns correct restaurant list"
+    - "Jazbar menu items accessible"
+    - "Services API returns 5 service types"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "Completed full seed_data.py rewrite. Please verify: 1) All 13 restaurants returned by GET /api/restaurants, 2) Mr T's Durban Curries and The Grill House do NOT exist, 3) CAFE E exists (renamed from Café Estreito), 4) Jazbar exists with 19 menu items, 5) GET /api/restaurants/{id}/menu returns items with unique image URLs. Test credentials: test@demo.com / test123"
+    - agent: "testing"
+      message: "COMPREHENSIVE TESTING COMPLETE ✅ All backend API requirements verified successfully: 1) GET /api/restaurants returns exactly 13 restaurants with all expected names, 2) Removed restaurants (Mr T's Durban Curries, The Grill House) confirmed absent, 3) Café Estreito correctly renamed to CAFE E, 4) Jazbar has 19 menu items across required categories (Curries, Bunny Chows, Weekly Specials), 5) All menu items have unique image URLs, 6) GET /api/services returns 5 service types (food, laundry, parcel, florist, pharmacy). Authentication working with test@demo.com/test123. Backend APIs fully functional."
