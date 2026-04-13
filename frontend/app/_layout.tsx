@@ -16,8 +16,11 @@ function useProtectedRoute() {
     const inOnboarding = segments[0] === 'onboarding';
     const isRoot = segments.length === 0 || segments[0] === 'index';
 
-    if (isAuthenticated && (inAuthGroup || inOnboarding || isRoot)) {
-      // User is logged in but on auth/onboarding/splash - redirect to home
+    // Don't redirect from splash screen - let it handle its own navigation after the timer
+    if (isRoot) return;
+
+    if (isAuthenticated && (inAuthGroup || inOnboarding)) {
+      // User is logged in but on auth/onboarding - redirect to home
       router.replace('/(tabs)/home' as any);
     }
   }, [isAuthenticated, isLoading, segments]);
