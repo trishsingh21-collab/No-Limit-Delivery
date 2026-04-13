@@ -40,6 +40,7 @@ const SERVICE_TABS = [
   { key: 'laundry', label: 'Laundry', emoji: '👔' },
   { key: 'parcel', label: 'Parcels', emoji: '📦' },
   { key: 'florist', label: 'Flowers', emoji: '💐' },
+  { key: 'pharmacy', label: 'Pharmacy', emoji: '💊' },
 ];
 
 const getGreeting = () => {
