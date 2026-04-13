@@ -8,19 +8,19 @@ const { width } = Dimensions.get('window');
 
 const slides = [
   {
-    icon: 'restaurant' as const,
-    title: 'Discover Amazing Food',
-    description: 'Explore thousands of restaurants and cuisines from around the world',
+    icon: 'storefront' as const,
+    title: 'Everything You Need',
+    description: 'Food, laundry, parcels, flowers, pharmacy — all your local services in one app',
   },
   {
-    icon: 'sparkles' as const,
-    title: 'AI-Powered Recommendations',
-    description: 'Get personalized suggestions based on your taste and mood',
+    icon: 'location' as const,
+    title: 'Local & Convenient',
+    description: 'Supporting Emalahleni businesses with fast, reliable delivery to your door',
   },
   {
     icon: 'bicycle' as const,
-    title: 'Fast Delivery',
-    description: 'Track your order in real-time and get fresh food at your doorstep',
+    title: 'Track in Real-Time',
+    description: 'Live tracking, multiple payment options, and delivery updates every step of the way',
   },
 ];
 

@@ -27,7 +27,7 @@ export default function SplashScreen() {
     <View style={styles.container}>
       <Image source={{ uri: ICON_URL }} style={styles.icon} resizeMode="contain" />
       <Image source={{ uri: LOGO_URL }} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.tagline}>Premium delivery, no limits</Text>
+      <Text style={styles.tagline}>Your local everything, delivered</Text>
     </View>
   );
 }

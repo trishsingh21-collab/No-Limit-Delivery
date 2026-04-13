@@ -254,6 +254,169 @@ def test_services_count():
     success = service_count == 5 and len(missing_types) == 0
     return success, data
 
+def test_create_order_with_new_fields(auth_token, restaurants):
+    """Test POST /api/orders with new fields: payment_method, order_notes, allergies, tip, promo_code"""
+    print("\n=== Testing Create Order with New Fields ===")
+    
+    if not auth_token:
+        print("❌ Cannot test order creation without authentication")
+        return False
+    
+    # Find a restaurant to order from (use Pedro's Chicken)
+    pedros = None
+    for restaurant in restaurants:
+        if restaurant["name"] == "Pedro's Chicken":
+            pedros = restaurant
+            break
+    
+    if not pedros:
+        print("❌ Pedro's Chicken not found for order test")
+        return False
+    
+    # Get menu items for Pedro's
+    response = requests.get(f"{BASE_URL}/api/restaurants/{pedros['restaurant_id']}/menu")
+    if response.status_code != 200:
+        print(f"❌ Failed to get Pedro's menu: {response.status_code}")
+        return False
+    
+    menu_items = response.json()
+    if not menu_items:
+        print("❌ Pedro's menu is empty")
+        return False
+    
+    # Test different payment methods
+    payment_methods = ["card", "cash", "eft", "apple_pay"]
+    all_payment_methods_work = True
+    
+    for payment_method in payment_methods:
+        print(f"\n  Testing payment method: {payment_method}")
+        
+        # Create order with new fields
+        order_data = {
+            "restaurant_id": pedros["restaurant_id"],
+            "items": [
+                {
+                    "item_id": menu_items[0]["item_id"],
+                    "name": menu_items[0]["name"],
+                    "price": menu_items[0]["price"],
+                    "quantity": 1,
+                    "special_instructions": "Extra sauce please"
+                }
+            ],
+            "delivery_address": {
+                "street": "123 Test Street",
+                "city": "Witbank",
+                "postal_code": "1035",
+                "province": "Mpumalanga"
+            },
+            # NEW FIELDS TO TEST
+            "payment_method": payment_method,
+            "order_notes": "No onions please",
+            "allergies": ["Nuts", "Dairy"],
+            "tip": 15,
+            "promo_code": "NOLIMIT40"
+        }
+        
+        headers = {"Authorization": f"Bearer {auth_token}"}
+        response = requests.post(f"{BASE_URL}/api/orders", json=order_data, headers=headers)
+        
+        if response.status_code == 200:
+            order = response.json()
+            print(f"    ✅ {payment_method}: Order created successfully (ID: {order.get('order_id', 'N/A')})")
+            print(f"       Payment Method in response: {order.get('payment_method', 'N/A')}")
+        elif response.status_code == 422:
+            error_detail = response.json()
+            print(f"    ❌ {payment_method}: Validation error - {error_detail}")
+            all_payment_methods_work = False
+        else:
+            print(f"    ❌ {payment_method}: Failed with status {response.status_code}")
+            all_payment_methods_work = False
+    
+    # Test with all new fields using card payment
+    print(f"\n  Testing all new fields together:")
+    order_data = {
+        "restaurant_id": pedros["restaurant_id"],
+        "items": [
+            {
+                "item_id": menu_items[0]["item_id"],
+                "name": menu_items[0]["name"],
+                "price": menu_items[0]["price"],
+                "quantity": 2,
+                "special_instructions": "Extra sauce please"
+            }
+        ],
+        "delivery_address": {
+            "street": "123 Test Street",
+            "city": "Witbank",
+            "postal_code": "1035",
+            "province": "Mpumalanga"
+        },
+        # NEW FIELDS TO TEST
+        "payment_method": "card",
+        "order_notes": "No onions please",
+        "allergies": ["Nuts", "Dairy"],
+        "tip": 15,
+        "promo_code": "NOLIMIT40"
+    }
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    response = requests.post(f"{BASE_URL}/api/orders", json=order_data, headers=headers)
+    
+    if response.status_code == 200:
+        order = response.json()
+        print("    ✅ Order with all new fields created successfully")
+        print(f"       Order ID: {order.get('order_id', 'N/A')}")
+        print(f"       Total: R{order.get('total', 'N/A')}")
+        print(f"       Payment Method: {order.get('payment_method', 'N/A')}")
+        
+        # Check if new fields are returned (implementation status)
+        if "order_notes" in order:
+            print(f"       Order Notes: {order['order_notes']}")
+        else:
+            print("       ⚠️  Order Notes field not returned (not yet implemented)")
+        
+        if "allergies" in order:
+            print(f"       Allergies: {order['allergies']}")
+        else:
+            print("       ⚠️  Allergies field not returned (not yet implemented)")
+        
+        if "tip" in order:
+            print(f"       Tip: R{order['tip']}")
+        else:
+            print("       ⚠️  Tip field not returned (not yet implemented)")
+        
+        if "promo_code" in order:
+            print(f"       Promo Code: {order['promo_code']}")
+        else:
+            print("       ⚠️  Promo Code field not returned (not yet implemented)")
+        
+        return all_payment_methods_work
+    
+    elif response.status_code == 422:
+        # Validation error - check if it's due to new fields
+        error_detail = response.json()
+        print(f"    ❌ Validation error: {error_detail}")
+        
+        # Try without new fields to see if basic order creation works
+        basic_order_data = {
+            "restaurant_id": pedros["restaurant_id"],
+            "items": order_data["items"],
+            "delivery_address": order_data["delivery_address"]
+        }
+        
+        basic_response = requests.post(f"{BASE_URL}/api/orders", json=basic_order_data, headers=headers)
+        if basic_response.status_code == 200:
+            print("    ✅ Basic order creation works - new fields not yet supported")
+            print("       The API rejects requests with new fields (payment_method, order_notes, allergies, tip, promo_code)")
+            return False  # New fields not supported yet
+        else:
+            print(f"    ❌ Basic order creation also failed: {basic_response.status_code}")
+            return False
+    
+    else:
+        print(f"    ❌ Order creation failed: {response.status_code} - {response.text}")
+        return False
+
 def run_all_tests():
     """Run all backend tests"""
     print("🚀 Starting No Limit Delivery Backend Tests")
@@ -283,6 +446,9 @@ def run_all_tests():
     # Test services count
     services_success, services = test_services_count()
     
+    # Test create order with new fields
+    order_success = test_create_order_with_new_fields(auth_token, restaurants)
+    
     # Summary
     print("\n" + "=" * 60)
     print("📊 TEST SUMMARY")
@@ -294,7 +460,8 @@ def run_all_tests():
         ("Restaurant Names", names_success),
         ("Jazbar Menu Categories", jazbar_success),
         ("Menu Item Images", images_success),
-        ("Services Count (5)", services_success)
+        ("Services Count (5)", services_success),
+        ("Create Order with New Fields", order_success)
     ]
     
     passed = 0

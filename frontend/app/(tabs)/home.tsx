@@ -261,7 +261,7 @@ export default function HomeScreen() {
           </Animated.View>
           {allRestaurants
             .filter(r => activeService === 'all' || r.service_type === activeService)
-            .filter(r => !r.featured).slice(0, 8).map((restaurant, index) => (
+            .map((restaurant, index) => (
             <StaggerItem key={restaurant.restaurant_id} index={index} delay={80}>
               <TouchableOpacity
                 style={styles.listCard}
