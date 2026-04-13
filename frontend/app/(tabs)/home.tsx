@@ -24,14 +24,14 @@ const { width } = Dimensions.get('window');
 
 const CATEGORIES = [
   { name: 'Chicken', emoji: '🍗', cuisine: 'Chicken' },
+  { name: 'Pizza', emoji: '🍕', cuisine: 'Pizza' },
+  { name: 'Braai', emoji: '🔥', cuisine: 'Braai & BBQ' },
   { name: 'Mexican', emoji: '🌮', cuisine: 'Mexican Chicken' },
-  { name: 'Grill', emoji: '🔥', cuisine: 'Grill & BBQ' },
   { name: 'Shawarma', emoji: '🌯', cuisine: 'Shawarma & Grill' },
   { name: 'Curry', emoji: '🍛', cuisine: 'Indian & Curry' },
   { name: 'Café', emoji: '☕', cuisine: 'Café & Coffee' },
   { name: 'Meals', emoji: '🍱', cuisine: 'Home-Style Meals' },
   { name: 'Take-Away', emoji: '🍟', cuisine: 'Take-Away' },
-  { name: 'Flowers', emoji: '💐', cuisine: 'Florist' },
 ];
 
 const SERVICE_TABS = [
