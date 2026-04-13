@@ -72,10 +72,11 @@ export default function SplashScreen() {
     <View style={styles.container}>
       <RNAnimated.View style={[styles.content, { opacity: fadeAnim }]}>
         <Image source={{ uri: ICON_URL }} style={styles.icon} resizeMode="contain" />
-        <Image source={{ uri: LOGO_URL }} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.brandName}>NO LIMIT</Text>
+        <Text style={styles.brandSub}>DELIVERY</Text>
       </RNAnimated.View>
       <RNAnimated.View style={{ opacity: taglineFade }}>
-        <Text style={styles.tagline}>Your local everything, delivered</Text>
+        <Text style={styles.tagline}>Limitless delivery locally</Text>
         <Text style={styles.loadingText}>Loading{dots}</Text>
       </RNAnimated.View>
     </View>
@@ -98,10 +99,20 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     marginBottom: Spacing.lg,
   },
-  logo: {
-    width: 240,
-    height: 80,
-    marginBottom: Spacing.md,
+  brandName: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    letterSpacing: 3,
+    textAlign: 'center',
+  },
+  brandSub: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.textSecondary,
+    letterSpacing: 6,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
   },
   tagline: {
     fontSize: 15,
