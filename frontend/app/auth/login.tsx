@@ -44,16 +44,9 @@ export default function LoginScreen() {
   };
   
   const handleGoogleLogin = () => {
-    // Use platform-appropriate URL for Google OAuth redirect
-    const baseUrl = process.env.EXPO_PUBLIC_BACKEND_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-    if (baseUrl) {
-      const redirectUrl = baseUrl + '/auth/google-callback';
-      const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-      if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        window.location.href = authUrl;
-      } else {
-        Linking.openURL(authUrl);
-      }
+    if (typeof window !== 'undefined') {
+      const redirectUrl = window.location.origin + '/auth/google-callback';
+      window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     }
   };
   

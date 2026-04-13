@@ -5,9 +5,13 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 import uuid
 from datetime import datetime, timezone
+import os
+from dotenv import load_dotenv
 
-client = AsyncIOMotorClient("mongodb://localhost:27017")
-db = client["test_database"]
+load_dotenv()
+
+client = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
+db = client[os.environ.get("DB_NAME", "test_database")]
 
 # =====================================================================
 # IMAGE POOLS - Curated Unsplash URLs by category for unique per-item images
