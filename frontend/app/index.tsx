@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../store/authStore';
-import { Colors, Typography, Spacing } from '../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { Colors, Spacing } from '../constants/Colors';
+
+const ICON_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/fbc42bd4fce64eda9d87b3c2088d37d8aa9637f56451d288c0e41be214db92c6.png';
+const LOGO_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/ef138190ead02ebe8a98101f1b1ce17d392af0f16a2c371c56604c3d9f3cf927.png';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -17,19 +19,14 @@ export default function SplashScreen() {
       } else {
         router.replace('/onboarding');
       }
-    }, 2000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, [isAuthenticated, isLoading]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <View style={styles.iconRing}>
-          <Ionicons name="flash" size={48} color={Colors.sage} />
-        </View>
-        <Text style={styles.appName}>NO LIMIT</Text>
-        <Text style={styles.appNameSub}>DELIVERY</Text>
-      </View>
+      <Image source={{ uri: ICON_URL }} style={styles.icon} resizeMode="contain" />
+      <Image source={{ uri: LOGO_URL }} style={styles.logo} resizeMode="contain" />
       <Text style={styles.tagline}>Premium delivery, no limits</Text>
     </View>
   );
@@ -42,36 +39,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: Spacing.xxl,
-  },
-  iconRing: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 1.5,
-    borderColor: Colors.sage,
-    justifyContent: 'center',
-    alignItems: 'center',
+  icon: {
+    width: 120,
+    height: 120,
+    borderRadius: 28,
     marginBottom: Spacing.lg,
-    backgroundColor: Colors.white,
   },
-  appName: {
-    fontSize: 36,
-    fontWeight: '200',
-    color: Colors.charcoal,
-    letterSpacing: 8,
-  },
-  appNameSub: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.sage,
-    letterSpacing: 6,
-    marginTop: Spacing.xs,
+  logo: {
+    width: 240,
+    height: 80,
+    marginBottom: Spacing.md,
   },
   tagline: {
-    ...Typography.body,
+    fontSize: 14,
+    fontWeight: '300',
     color: Colors.textSecondary,
+    letterSpacing: 1,
   },
 });
