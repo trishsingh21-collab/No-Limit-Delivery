@@ -10,6 +10,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/Colors';
@@ -43,10 +44,16 @@ export default function LoginScreen() {
   };
   
   const handleGoogleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    if (typeof window !== 'undefined') {
-      const redirectUrl = window.location.origin + '/auth/google-callback';
-      window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    // Use platform-appropriate URL for Google OAuth redirect
+    const baseUrl = process.env.EXPO_PUBLIC_BACKEND_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+    if (baseUrl) {
+      const redirectUrl = baseUrl + '/auth/google-callback';
+      const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        window.location.href = authUrl;
+      } else {
+        Linking.openURL(authUrl);
+      }
     }
   };
   
