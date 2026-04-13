@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request, Header, Response, Cookie
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -1328,6 +1329,22 @@ async def seed_data():
 
 # Include the router in the main app
 fastapi_app.include_router(api_router)
+
+# Serve screenshots for download
+fastapi_app.mount("/api/screenshots", StaticFiles(directory="/app/backend/static/screenshots"), name="screenshots")
+
+@fastapi_app.get("/api/download-screenshots")
+async def download_screenshots_page():
+    """Page to download all App Store screenshots"""
+    import os
+    files = sorted([f for f in os.listdir("/app/backend/static/screenshots") if f.endswith('.png')])
+    links = "".join(f'<a href="/api/screenshots/{f}" download="{f}" style="display:block;margin:12px 0;padding:14px 20px;background:#87A96B;color:white;border-radius:10px;text-decoration:none;font-weight:600;text-align:center">{f} (1284x2778px)</a>' for f in files)
+    return HTMLResponse(f"""
+    <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>body{{font-family:system-ui;max-width:500px;margin:40px auto;padding:20px;background:#F0F2ED}}h1{{color:#333}}p{{color:#666}}</style></head>
+    <body><h1>App Store Screenshots</h1><p>Click each to download (all 1284x2778px):</p>{links}
+    <p style="margin-top:30px;font-size:13px;color:#999">Right-click → Save As if clicking doesn't download</p></body></html>
+    """)
 
 fastapi_app.add_middleware(
     CORSMiddleware,
