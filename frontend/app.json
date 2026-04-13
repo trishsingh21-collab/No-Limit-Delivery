@@ -19,7 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#87A96B"
+        "backgroundColor": "#F0F2ED"
       },
       "package": "com.nolimitdelivery.app",
       "permissions": [
@@ -42,7 +42,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#87A96B"
+          "backgroundColor": "#F0F2ED"
         }
       ],
       [
