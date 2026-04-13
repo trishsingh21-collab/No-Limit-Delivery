@@ -89,6 +89,7 @@ export default function ProfileScreen() {
     { icon: 'notifications-outline', title: 'Notifications', onPress: () => router.push('/notifications' as any) },
     { icon: 'star-outline', title: 'My Reviews', onPress: () => router.push('/my-reviews' as any) },
     { icon: 'help-circle-outline', title: 'Help & Support', onPress: () => router.push('/help' as any) },
+    { icon: 'shield-checkmark-outline', title: 'Privacy Policy', onPress: () => router.push('/privacy-policy' as any) },
   ];
 
   return (
