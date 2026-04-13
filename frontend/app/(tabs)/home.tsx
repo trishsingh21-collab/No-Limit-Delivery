@@ -28,9 +28,9 @@ const CATEGORIES = [
   { name: 'Grill', emoji: '🔥', cuisine: 'Grill & BBQ' },
   { name: 'Shawarma', emoji: '🌯', cuisine: 'Shawarma & Grill' },
   { name: 'Curry', emoji: '🍛', cuisine: 'Indian & Curry' },
+  { name: 'Meals', emoji: '🍱', cuisine: 'Home-Style Meals' },
   { name: 'Flowers', emoji: '💐', cuisine: 'Florist' },
   { name: 'Laundry', emoji: '👔', cuisine: 'Laundry' },
-  { name: 'Parcels', emoji: '📦', cuisine: 'Parcel Delivery' },
 ];
 
 const SERVICE_TABS = [
