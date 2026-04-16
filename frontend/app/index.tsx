@@ -5,16 +5,11 @@ import { useAuthStore } from '../store/authStore';
 import { Colors, Spacing } from '../constants/Colors';
 
 const ICON_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/47aab7b6590a09b1f0856621efe0291e4d9a0f2ec42ccc4cc7c9b6374114ba67.png';
-const LOGO_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec31-45a5-8f71-a124d3cd6030/images/ef138190ead02ebe8a98101f1b1ce17d392af0f16a2c371c56604c3d9f3cf927.png';
 
 const SPLASH_DURATION = 12000; // 12 seconds
 
 export default function SplashScreen() {
-  useEffect(() => {
-  registerForPushNotificationsAsync();
-}, []);
   const router = useRouter();
-  const authStore = useAuthStore();
   const hasNavigated = useRef(false);
   const fadeAnim = useRef(new RNAnimated.Value(0)).current;
   const taglineFade = useRef(new RNAnimated.Value(0)).current;
@@ -52,7 +47,6 @@ export default function SplashScreen() {
 
       const { isAuthenticated, isLoading } = useAuthStore.getState();
       if (isLoading) {
-        // If still loading, wait another 2s then navigate
         setTimeout(() => {
           const state = useAuthStore.getState();
           if (state.isAuthenticated) {
@@ -69,7 +63,7 @@ export default function SplashScreen() {
     }, SPLASH_DURATION);
 
     return () => clearTimeout(timer);
-  }, []); // Empty deps - timer runs exactly once
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -133,22 +127,3 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
 });
-async function registerForPushNotificationsAsync() {
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== 'granted') {
-      console.log('Permission not granted');
-      return;
-    }
-
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log("Push Token:", token);
-  }
-}
