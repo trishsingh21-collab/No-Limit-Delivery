@@ -10,6 +10,9 @@ const LOGO_URL = 'https://static.prod-images.emergentagent.com/jobs/d9dce736-ec3
 const SPLASH_DURATION = 12000; // 12 seconds
 
 export default function SplashScreen() {
+  useEffect(() => {
+  registerForPushNotificationsAsync();
+}, []);
   const router = useRouter();
   const authStore = useAuthStore();
   const hasNavigated = useRef(false);
@@ -130,3 +133,22 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
 });
+async function registerForPushNotificationsAsync() {
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      console.log('Permission not granted');
+      return;
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("Push Token:", token);
+  }
+}
