@@ -1,7 +1,7 @@
 import { useAuthStore } from '../store/authStore';
 
-// 🔥 IMPORTANT: Replace this IP with YOUR own (from ipconfig)
-const BACKEND_URL = 'https://vscode-eb228d18-4d59-45e7-8a8d-01322ed7fdd9.preview.emergentagent.com/proxy/8000';
+// Backend URL from environment variable
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 export const api = {
   // Services
