@@ -2,7 +2,7 @@
   "expo": {
     "name": "No Limit Delivery",
     "slug": "no-limit-delivery",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "nolimitdelivery",
@@ -18,6 +18,7 @@
     },
     "android": {
       "package": "com.nolimitdelivery.app",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F0F2ED"
@@ -52,7 +53,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Track your delivery in real-time"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

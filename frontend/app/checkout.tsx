@@ -522,9 +522,10 @@ export default function CheckoutScreen() {
                 <Text style={styles.summaryValue}>R{subtotal.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Delivery ({restaurantIds.length} x R25)</Text>
+                <Text style={styles.summaryLabel}>Delivery ({restaurantIds.length} x R30)</Text>
                 <Text style={styles.summaryValue}>R{deliveryFees.toFixed(2)}</Text>
               </View>
+              <Text style={[styles.summaryLabel, { fontSize: 11, marginBottom: 8 }]}>Within 5km: R30 | 5km+: R35</Text>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>VAT (15%)</Text>
                 <Text style={styles.summaryValue}>R{vat.toFixed(2)}</Text>

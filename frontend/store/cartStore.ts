@@ -27,7 +27,9 @@ interface CartState {
   getGrandTotal: () => number;
 }
 
-const DELIVERY_FEE_PER_RESTAURANT = 25.00;
+const DELIVERY_FEE_LOCAL = 30.00;  // Within 5km
+const DELIVERY_FEE_FAR = 35.00;   // 5km or more
+const DELIVERY_FEE_PER_RESTAURANT = DELIVERY_FEE_LOCAL; // Default to local
 const VAT_RATE = 0.15;
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -116,5 +118,6 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 }));
 
-export const DELIVERY_FEE = DELIVERY_FEE_PER_RESTAURANT;
+export const DELIVERY_FEE = DELIVERY_FEE_LOCAL;
+export const DELIVERY_FEE_5KM_PLUS = DELIVERY_FEE_FAR;
 export const TAX_RATE = VAT_RATE;
