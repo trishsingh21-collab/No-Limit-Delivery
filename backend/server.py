@@ -1088,7 +1088,7 @@ async def add_address(
 
 # ==================== SEED DATA ====================
 
-@api_router.post("/seed-data")
+@api_router.get("/seed-data")
 async def seed_data():
     """Seed database with sample restaurants and menus"""
     # Check if already seeded
