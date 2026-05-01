@@ -15,6 +15,16 @@ from datetime import datetime, timezone, timedelta
 import bcrypt
 import urllib.parse
 from hashlib import md5
+# emergentintegrations is only available on Emergent platform - use fallbacks for external deployment
+try:
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+    HAS_EMERGENT = True
+except ImportError:
+    HAS_EMERGENT = False
+    LlmChat = None
+    UserMessage = None
+    StripeCheckout = None
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -765,7 +775,10 @@ async def get_recommendations(
     order_history = ", ".join([order["restaurant_name"] for order in recent_orders]) if recent_orders else "No previous orders"
     restaurant_list = ", ".join([f"{r['name']} ({r['cuisine_type']})" for r in restaurants[:20]])
     
-    # Call LLM
+    # Call LLM (only works on Emergent platform)
+    if not HAS_EMERGENT:
+        return {"recommendations": "Browse our 13+ local providers!", "restaurants": restaurants[:5]}
+    
     chat = LlmChat(
         api_key=os.environ.get("EMERGENT_LLM_KEY"),
         session_id=f"recommendations_{user.user_id}",
@@ -796,7 +809,12 @@ async def food_randomizer():
     
     restaurant_list = ", ".join([f"{r['name']} ({r['cuisine_type']})" for r in restaurants])
     
-    # Call LLM
+    # Call LLM (only works on Emergent platform)
+    if not HAS_EMERGENT:
+        import random
+        pick = random.choice(restaurants) if restaurants else {"name": "Pedro's Chicken", "cuisine_type": "Chicken"}
+        return {"suggestion": f"Today's pick: {pick['name']}! Great {pick.get('cuisine_type', 'food')} awaits.", "restaurants": restaurants}
+    
     chat = LlmChat(
         api_key=os.environ.get("EMERGENT_LLM_KEY"),
         session_id=f"randomizer_{uuid.uuid4().hex[:8]}",
@@ -831,7 +849,10 @@ async def mood_suggestions(data: MoodSuggestionRequest):
     restaurants = await db.restaurants.find({"active": True}, {"_id": 0}).to_list(30)
     restaurant_list = ", ".join([f"{r['name']} ({r['cuisine_type']})" for r in restaurants])
     
-    # Call LLM
+    # Call LLM (only works on Emergent platform)
+    if not HAS_EMERGENT:
+        return {"suggestions": f"Based on your mood, try one of our {len(restaurants)} providers!", "restaurants": restaurants[:5]}
+    
     chat = LlmChat(
         api_key=os.environ.get("EMERGENT_LLM_KEY"),
         session_id=f"mood_{uuid.uuid4().hex[:8]}",
@@ -861,6 +882,8 @@ async def create_checkout(
     session_token: Optional[str] = Cookie(None)
 ):
     """Create Stripe checkout session"""
+    if not HAS_EMERGENT:
+        raise HTTPException(status_code=501, detail="Stripe not available. Use PayFast instead.")
     user = await get_current_user(authorization, session_token)
     
     # Get origin from request
@@ -1086,7 +1109,7 @@ async def add_address(
 
 # ==================== SEED DATA ====================
 
-@api_router.post("/seed-data")
+@api_router.get("/seed-data")
 async def seed_data():
     """Seed database with sample restaurants and menus"""
     # Check if already seeded
