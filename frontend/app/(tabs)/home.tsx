@@ -60,17 +60,24 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeService, setActiveService] = useState('all');
+  const [error, setError] = useState('');
 
   const loadData = async () => {
     try {
+      setError('');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const [featured, all] = await Promise.all([
         api.getRestaurants({ featured: true }),
         api.getRestaurants({}),
       ]);
+      clearTimeout(timeout);
       setFeaturedRestaurants(featured);
       setAllRestaurants(all);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading restaurants:', error);
+      setError('Unable to connect. Pull down to retry.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -85,6 +92,7 @@ export default function HomeScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.sage} />
+        <Text style={{ marginTop: 12, color: Colors.textSecondary }}>Loading providers...</Text>
       </View>
     );
   }

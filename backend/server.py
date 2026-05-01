@@ -1,17 +1,14 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request, Header, Response, Cookie
 from fastapi.responses import JSONResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
 import logging
-from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
 import socketio
 from datetime import datetime, timezone, timedelta
-import bcrypt
 import urllib.parse
 from hashlib import md5
 from supabase import create_client, Client
@@ -25,6 +22,10 @@ logger = logging.getLogger("server")
 # ==================== SUPABASE CLIENT ====================
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://gxotqmfripuffxnanrfi.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+
+if not SUPABASE_KEY:
+    logger.error("SUPABASE_KEY not set! Server will not function correctly.")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ==================== SOCKETIO ====================
@@ -33,6 +34,11 @@ sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 # ==================== FASTAPI APP ====================
 fastapi_app = FastAPI()
 api_router = APIRouter(prefix="/api")
+
+# Health check endpoint (Railway uses this to verify the app is running)
+@api_router.get("/health")
+async def health():
+    return {"status": "ok", "db": "supabase", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 # ==================== MODELS ====================
 class User(BaseModel):
