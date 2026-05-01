@@ -1,7 +1,20 @@
 import { useAuthStore } from '../store/authStore';
+import { Platform } from 'react-native';
 
-// Backend URL from environment variable
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://no-limit-delivery-production.up.railway.app';
+// Backend URL logic:
+// - On web: use empty string (ingress routes /api/* to backend automatically)
+// - On mobile: use Railway URL or env var
+const getBackendUrl = () => {
+  if (process.env.EXPO_PUBLIC_BACKEND_URL) {
+    return process.env.EXPO_PUBLIC_BACKEND_URL;
+  }
+  if (Platform.OS === 'web') {
+    return ''; // Web preview uses relative /api/* paths via ingress
+  }
+  return 'https://no-limit-delivery-production.up.railway.app';
+};
+
+const BACKEND_URL = getBackendUrl();
 
 export const api = {
   // Services
