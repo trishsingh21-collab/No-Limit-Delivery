@@ -111,7 +111,7 @@ class PaymentTransaction(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # ==================== HELPERS ====================
-sessions = {}
+sessions = {}  # token -> { user_id, email }
 
 async def get_current_user(authorization: Optional[str] = None, session_token: Optional[str] = None):
     token = None
@@ -121,55 +121,77 @@ async def get_current_user(authorization: Optional[str] = None, session_token: O
         token = session_token
     if not token or token not in sessions:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    user_id = sessions[token]
-    result = supabase.table("users").select("*").eq("user_id", user_id).execute()
+    session_data = sessions[token]
+    user_id = session_data["user_id"]
+    result = supabase.table("profiles").select("*").eq("id", user_id).execute()
     if not result.data:
         raise HTTPException(status_code=401, detail="User not found")
-    user_data = result.data[0]
-    return User(**user_data)
+    profile = result.data[0]
+    profile["user_id"] = str(profile["id"])
+    return profile
 
 # ==================== AUTH ENDPOINTS ====================
 @api_router.post("/auth/signup")
 async def signup(data: SignupRequest):
-    existing = supabase.table("users").select("user_id").eq("email", data.email).execute()
-    if existing.data:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    password_hash = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    user = User(email=data.email, password_hash=password_hash, name=data.name)
-    
-    supabase.table("users").insert({
-        "user_id": user.user_id, "email": user.email, "password_hash": user.password_hash,
-        "name": user.name, "phone": "", "addresses": [], "loyalty_points": 0
-    }).execute()
-    
-    session_token = f"session_{uuid.uuid4().hex}"
-    sessions[session_token] = user.user_id
-    
-    return {"user": {"user_id": user.user_id, "email": user.email, "name": user.name}, "session_token": session_token}
+    try:
+        # Use admin API to create user with auto-confirmation (no email verification needed)
+        auth_response = supabase.auth.admin.create_user({
+            "email": data.email,
+            "password": data.password,
+            "email_confirm": True,
+        })
+        
+        if auth_response.user is None:
+            raise HTTPException(status_code=400, detail="Signup failed")
+        
+        user_id = str(auth_response.user.id)
+        
+        # Update profile with name
+        supabase.table("profiles").update({"name": data.name}).eq("id", user_id).execute()
+        
+        session_token = f"session_{uuid.uuid4().hex}"
+        sessions[session_token] = {"user_id": user_id, "email": data.email}
+        
+        return {"user": {"user_id": user_id, "email": data.email, "name": data.name}, "session_token": session_token}
+    except Exception as e:
+        error_msg = str(e)
+        if "already" in error_msg.lower():
+            raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail=f"Signup failed: {error_msg}")
 
 @api_router.post("/auth/login")
 async def login(data: LoginRequest):
-    result = supabase.table("users").select("*").eq("email", data.email).execute()
-    if not result.data:
+    try:
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": data.email,
+            "password": data.password,
+        })
+        
+        if auth_response.user is None:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        user_id = str(auth_response.user.id)
+        
+        # Get profile
+        profile_result = supabase.table("profiles").select("*").eq("id", user_id).execute()
+        profile = profile_result.data[0] if profile_result.data else {"name": "", "phone": "", "loyalty_points": 0}
+        
+        session_token = f"session_{uuid.uuid4().hex}"
+        sessions[session_token] = {"user_id": user_id, "email": data.email}
+        
+        return {
+            "user": {"user_id": user_id, "email": data.email, "name": profile.get("name", ""), "phone": profile.get("phone", ""), "loyalty_points": profile.get("loyalty_points", 0)},
+            "session_token": session_token
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    user_data = result.data[0]
-    if not bcrypt.checkpw(data.password.encode('utf-8'), user_data["password_hash"].encode('utf-8')):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    session_token = f"session_{uuid.uuid4().hex}"
-    sessions[session_token] = user_data["user_id"]
-    
-    return {
-        "user": {"user_id": user_data["user_id"], "email": user_data["email"], "name": user_data["name"], "phone": user_data.get("phone", ""), "loyalty_points": user_data.get("loyalty_points", 0)},
-        "session_token": session_token
-    }
 
 @api_router.get("/auth/me")
 async def get_me(authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
-    return {"user_id": user.user_id, "email": user.email, "name": user.name, "phone": user.phone, "loyalty_points": user.loyalty_points}
+    profile = await get_current_user(authorization, session_token)
+    return {"user_id": profile["user_id"], "email": profile.get("email", ""), "name": profile.get("name", ""), "phone": profile.get("phone", ""), "loyalty_points": profile.get("loyalty_points", 0)}
 
 @api_router.post("/auth/logout")
 async def logout(authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
@@ -222,7 +244,8 @@ async def get_reviews(restaurant_id: str):
 # ==================== ORDERS ====================
 @api_router.post("/orders")
 async def create_order(data: CreateOrder, authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
+    profile = await get_current_user(authorization, session_token)
+    user_id = profile["user_id"]
     
     rest_result = supabase.table("restaurants").select("name").eq("restaurant_id", data.restaurant_id).execute()
     restaurant_name = rest_result.data[0]["name"] if rest_result.data else "Unknown"
@@ -232,39 +255,35 @@ async def create_order(data: CreateOrder, authorization: Optional[str] = Header(
     tax = subtotal * 0.15
     total = subtotal + delivery_fee + tax + data.tip
     
-    order = Order(
-        user_id=user.user_id, restaurant_id=data.restaurant_id, restaurant_name=restaurant_name,
-        items=[item.model_dump() for item in data.items], subtotal=round(subtotal, 2),
-        delivery_fee=round(delivery_fee, 2), tax=round(tax, 2), total=round(total, 2),
-        delivery_address=data.delivery_address, payment_method=data.payment_method,
-        order_notes=data.order_notes, allergies=data.allergies, tip=data.tip,
-        promo_code=data.promo_code, estimated_delivery=datetime.now(timezone.utc) + timedelta(minutes=40)
-    )
-    
-    order_dict = order.model_dump()
-    order_dict["created_at"] = order_dict["created_at"].isoformat()
-    order_dict["updated_at"] = order_dict["updated_at"].isoformat()
-    order_dict["estimated_delivery"] = order_dict["estimated_delivery"].isoformat() if order_dict["estimated_delivery"] else None
-    # Remove fields not in schema
-    order_dict.pop("id", None)
+    order_id = f"order_{uuid.uuid4().hex[:12]}"
+    order_dict = {
+        "order_id": order_id, "user_id": user_id, "restaurant_id": data.restaurant_id,
+        "restaurant_name": restaurant_name, "items": [item.model_dump() for item in data.items],
+        "subtotal": round(subtotal, 2), "delivery_fee": round(delivery_fee, 2),
+        "tax": round(tax, 2), "total": round(total, 2),
+        "delivery_address": data.delivery_address, "payment_method": data.payment_method,
+        "order_notes": data.order_notes, "allergies": data.allergies, "tip": data.tip,
+        "promo_code": data.promo_code, "status": "pending", "payment_status": "unpaid",
+    }
     
     supabase.table("orders").insert(order_dict).execute()
     
     # Update loyalty points
-    supabase.table("users").update({"loyalty_points": user.loyalty_points + 10}).eq("user_id", user.user_id).execute()
+    new_points = profile.get("loyalty_points", 0) + 10
+    supabase.table("profiles").update({"loyalty_points": new_points}).eq("id", user_id).execute()
     
-    return order.model_dump()
+    return order_dict
 
 @api_router.get("/orders")
 async def get_orders(authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
-    result = supabase.table("orders").select("*").eq("user_id", user.user_id).order("created_at", desc=True).execute()
+    profile = await get_current_user(authorization, session_token)
+    result = supabase.table("orders").select("*").eq("user_id", profile["user_id"]).order("created_at", desc=True).execute()
     return result.data
 
 @api_router.get("/orders/{order_id}")
 async def get_order(order_id: str, authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
-    result = supabase.table("orders").select("*").eq("order_id", order_id).eq("user_id", user.user_id).execute()
+    profile = await get_current_user(authorization, session_token)
+    result = supabase.table("orders").select("*").eq("order_id", order_id).eq("user_id", profile["user_id"]).execute()
     if not result.data:
         raise HTTPException(status_code=404, detail="Order not found")
     return result.data[0]
@@ -279,23 +298,23 @@ async def update_order_status(order_id: str, request: Request):
 # ==================== PROFILE ====================
 @api_router.get("/profile")
 async def get_profile(authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
-    orders_result = supabase.table("orders").select("order_id").eq("user_id", user.user_id).execute()
+    profile = await get_current_user(authorization, session_token)
+    orders_result = supabase.table("orders").select("order_id").eq("user_id", profile["user_id"]).execute()
     return {
-        "user_id": user.user_id, "email": user.email, "name": user.name, "phone": user.phone,
-        "loyalty_points": user.loyalty_points, "total_orders": len(orders_result.data),
-        "addresses": user.addresses
+        "user_id": profile["user_id"], "email": profile.get("email", ""), "name": profile.get("name", ""), "phone": profile.get("phone", ""),
+        "loyalty_points": profile.get("loyalty_points", 0), "total_orders": len(orders_result.data),
+        "addresses": profile.get("addresses", [])
     }
 
 @api_router.put("/profile")
 async def update_profile(request: Request, authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
+    profile = await get_current_user(authorization, session_token)
     body = await request.json()
     update_data = {}
     if "name" in body: update_data["name"] = body["name"]
     if "phone" in body: update_data["phone"] = body["phone"]
     if update_data:
-        supabase.table("users").update(update_data).eq("user_id", user.user_id).execute()
+        supabase.table("profiles").update(update_data).eq("id", profile["user_id"]).execute()
     return {"message": "Profile updated"}
 
 # ==================== PAYFAST PAYMENT ====================
@@ -324,13 +343,13 @@ def calculate_payfast_signature(data: dict, passphrase: str) -> str:
 
 @api_router.post("/payments/payfast/create")
 async def create_payfast_payment(request: Request, authorization: Optional[str] = Header(None), session_token: Optional[str] = Cookie(None)):
-    user = await get_current_user(authorization, session_token)
+    profile = await get_current_user(authorization, session_token)
     body = await request.json()
     order_id = body.get("order_id")
     if not order_id:
         raise HTTPException(status_code=400, detail="order_id required")
     
-    order_result = supabase.table("orders").select("*").eq("order_id", order_id).eq("user_id", user.user_id).execute()
+    order_result = supabase.table("orders").select("*").eq("order_id", order_id).eq("user_id", profile["user_id"]).execute()
     if not order_result.data:
         raise HTTPException(status_code=404, detail="Order not found")
     order = order_result.data[0]
@@ -343,8 +362,8 @@ async def create_payfast_payment(request: Request, authorization: Optional[str] 
         "return_url": f"{base_url}/api/payments/payfast/return?order_id={order_id}",
         "cancel_url": f"{base_url}/api/payments/payfast/cancel?order_id={order_id}",
         "notify_url": f"{base_url}/api/payments/payfast/notify",
-        "name_first": user.name.split()[0] if user.name else "Customer",
-        "email_address": user.email, "m_payment_id": order_id,
+        "name_first": profile.get("name", "Customer").split()[0] if profile.get("name") else "Customer",
+        "email_address": profile.get("email", ""), "m_payment_id": order_id,
         "amount": f"{order['total']:.2f}",
         "item_name": f"No Limit Delivery - Order {order_id[:16]}",
     }
