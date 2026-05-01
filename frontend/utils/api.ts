@@ -1,7 +1,7 @@
 import { useAuthStore } from '../store/authStore';
 
 // Backend URL from environment variable
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://no-limit-delivery-production.up.railway.app';
 
 export const api = {
   // Services
