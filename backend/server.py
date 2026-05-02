@@ -140,11 +140,13 @@ async def get_current_user(authorization: Optional[str] = None, session_token: O
 @api_router.post("/auth/signup")
 async def signup(data: SignupRequest):
     try:
-        # Use admin API to create user with auto-confirmation (no email verification needed)
-        auth_response = supabase.auth.admin.create_user({
+        # Use regular sign_up
+        auth_response = supabase.auth.sign_up({
             "email": data.email,
             "password": data.password,
-            "email_confirm": True,
+            "options": {
+                "data": {"name": data.name}
+            }
         })
         
         if auth_response.user is None:
@@ -153,7 +155,10 @@ async def signup(data: SignupRequest):
         user_id = str(auth_response.user.id)
         
         # Update profile with name
-        supabase.table("profiles").update({"name": data.name}).eq("id", user_id).execute()
+        try:
+            supabase.table("profiles").update({"name": data.name}).eq("id", user_id).execute()
+        except:
+            pass
         
         session_token = f"session_{uuid.uuid4().hex}"
         sessions[session_token] = {"user_id": user_id, "email": data.email}
